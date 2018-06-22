@@ -13,6 +13,8 @@
 #include "ERMParser.h"
 #include "ERMScriptModule.h"
 
+class ERMInterpreter;
+
 namespace VERMInterpreter
 {
 	using namespace ERM;
@@ -302,20 +304,20 @@ namespace VERMInterpreter
 
 	typedef boost::variant<char, double, int, std::string> TLiteral;
 
-	//for operator <, but this one seems to be implemented in boost alerady
-	struct _opLTvis : boost::static_visitor<bool>
-	{
-		const TLiteral & lhs;
-		_opLTvis(const TLiteral & _lhs) : lhs(_lhs)
-		{}
-
-		template<typename OP>
-		bool operator()(OP const & rhs) const
-		{
-			return boost::get<OP>(lhs) < rhs;
-		}
-	};
-
+//	//for operator <
+//	struct _opLTvis : boost::static_visitor<bool>
+//	{
+//		const TLiteral & lhs;
+//		_opLTvis(const TLiteral & _lhs) : lhs(_lhs)
+//		{}
+//
+//		template<typename OP>
+//		bool operator()(OP const & rhs) const
+//		{
+//			return boost::get<OP>(lhs) < rhs;
+//		}
+//	};
+//
 // 	bool operator<(const TLiteral & t1, const TLiteral & t2)
 // 	{
 // 		if(t1.type() == t2.type())
@@ -324,56 +326,56 @@ namespace VERMInterpreter
 // 		}
 // 		throw EVermScriptExecError("These types are incomparable!");
 // 	}
-
-
-	//for operator <=
-	struct _opLEvis : boost::static_visitor<bool>
-	{
-		const TLiteral & lhs;
-		_opLEvis(const TLiteral & _lhs) : lhs(_lhs)
-		{}
-
-		template<typename OP>
-		bool operator()(OP const & rhs) const
-		{
-			return boost::get<OP>(lhs) <= rhs;
-		}
-	};
-
-	bool operator<=(const TLiteral & t1, const TLiteral & t2);
-
-	//operator >
-	struct _opGTvis : boost::static_visitor<bool>
-	{
-		const TLiteral & lhs;
-		_opGTvis(const TLiteral & _lhs) : lhs(_lhs)
-		{}
-
-		template<typename OP>
-		bool operator()(OP const & rhs) const
-		{
-			return boost::get<OP>(lhs) > rhs;
-		}
-	};
-
-	bool operator>(const TLiteral & t1, const TLiteral & t2);
-
-	//operator >=
-
-	struct _opGEvis : boost::static_visitor<bool>
-	{
-		const TLiteral & lhs;
-		_opGEvis(const TLiteral & _lhs) : lhs(_lhs)
-		{}
-
-		template<typename OP>
-		bool operator()(OP const & rhs) const
-		{
-			return boost::get<OP>(lhs) >= rhs;
-		}
-	};
-
-	bool operator>=(const TLiteral & t1, const TLiteral & t2);
+//
+//
+//	//for operator <=
+//	struct _opLEvis : boost::static_visitor<bool>
+//	{
+//		const TLiteral & lhs;
+//		_opLEvis(const TLiteral & _lhs) : lhs(_lhs)
+//		{}
+//
+//		template<typename OP>
+//		bool operator()(OP const & rhs) const
+//		{
+//			return boost::get<OP>(lhs) <= rhs;
+//		}
+//	};
+//
+//	bool operator<=(const TLiteral & t1, const TLiteral & t2);
+//
+//	//operator >
+//	struct _opGTvis : boost::static_visitor<bool>
+//	{
+//		const TLiteral & lhs;
+//		_opGTvis(const TLiteral & _lhs) : lhs(_lhs)
+//		{}
+//
+//		template<typename OP>
+//		bool operator()(OP const & rhs) const
+//		{
+//			return boost::get<OP>(lhs) > rhs;
+//		}
+//	};
+//
+//	bool operator>(const TLiteral & t1, const TLiteral & t2);
+//
+//	//operator >=
+//
+//	struct _opGEvis : boost::static_visitor<bool>
+//	{
+//		const TLiteral & lhs;
+//		_opGEvis(const TLiteral & _lhs) : lhs(_lhs)
+//		{}
+//
+//		template<typename OP>
+//		bool operator()(OP const & rhs) const
+//		{
+//			return boost::get<OP>(lhs) >= rhs;
+//		}
+//	};
+//
+//	bool operator>=(const TLiteral & t1, const TLiteral & t2);
 
 	//operator =
 	struct _opEQvis : boost::static_visitor<bool>
@@ -469,8 +471,8 @@ namespace VERMInterpreter
 	public:
 		Environment() : parent(nullptr)
 		{}
-		void setPatent(Environment * _parent);
-		Environment * getPatent() const;
+		void setParent(Environment * _parent);
+		Environment * getParent() const;
 		enum EIsBoundMode {GLOBAL_ONLY, LOCAL_ONLY, ANYWHERE};
 		bool isBound(const std::string & name, EIsBoundMode mode) const;
 
@@ -487,8 +489,9 @@ namespace VERMInterpreter
 	//this class just introduces a new dynamic range when instantiated, nothing more
 	class IntroduceDynamicEnv
 	{
+		ERMInterpreter * interp;
 	public:
-		IntroduceDynamicEnv();
+		IntroduceDynamicEnv(ERMInterpreter * interp_);
 		~IntroduceDynamicEnv();
 	};
 
@@ -560,7 +563,7 @@ namespace VERMInterpreter
 			return *this;
 		}
 
-		VOption operator()(VermTreeIterator params);
+		VOption operator()(ERMInterpreter * interp, VermTreeIterator params);
 	};
 
 	struct OptionConverterVisitor : boost::static_visitor<VOption>
@@ -591,8 +594,6 @@ namespace VERMInterpreter
 
 	void printVOption(const VOption & opt);
 }
-
-class ERMInterpreter;
 
 struct TriggerIdentifierMatch
 {
@@ -785,12 +786,15 @@ class ERMInterpreter : public CScriptingModule
 	std::vector<VERMInterpreter::FileInfo*> files;
 	std::vector< VERMInterpreter::FileInfo* > fileInfos;
 	std::map<VERMInterpreter::LinePointer, ERM::TLine> scripts;
-	std::map<VERMInterpreter::LexicalPtr, VERMInterpreter::Environment> lexicalEnvs;
+//	std::map<VERMInterpreter::LexicalPtr, VERMInterpreter::Environment> lexicalEnvs;
 	ERM::TLine &retrieveLine(VERMInterpreter::LinePointer linePtr);
 	static ERM::TTriggerBase & retrieveTrigger(ERM::TLine &line);
 
 	VERMInterpreter::Environment * globalEnv;
+	VERMInterpreter::Environment * topDyn;
+
 	VERMInterpreter::ERMEnvironment * ermGlobalEnv;
+
 	typedef std::map<VERMInterpreter::TriggerType, std::vector<VERMInterpreter::Trigger> > TtriggerListType;
 	TtriggerListType triggers, postTriggers;
 	VERMInterpreter::Trigger * curTrigger;
@@ -834,6 +838,7 @@ public:
 	void scanScripts(); //scans for functions, triggers etc.
 
 	ERMInterpreter();
+	virtual ~ERMInterpreter();
 	bool checkCondition( ERM::Tcondition cond );
 	int getRealLine(const VERMInterpreter::LinePointer &lp);
 

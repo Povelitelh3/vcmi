@@ -17,10 +17,10 @@ class CGameInfoCallback;
 class CScriptingModule : public IGameEventsReceiver, public IBattleEventsReceiver
 {
 public:
-	virtual void executeUserCommand(const std::string &cmd){};
-	virtual void init(){}; //called upon the start of game (after map randomization, before first turn)
-	virtual void giveActionCB(IGameEventRealizer *cb){};
-	virtual void giveInfoCB(CGameInfoCallback * cb){};
+	virtual void executeUserCommand(const std::string &cmd){}; //DEPRECATED
+	virtual void init(){}; //called upon the start of game (after map randomization, before first turn) //DEPRECATED
+	virtual void giveActionCB(IGameEventRealizer *cb){}; //DEPRECATED
+	virtual void giveInfoCB(CGameInfoCallback * cb){}; //DEPRECATED
 
 	CScriptingModule(){}
 	virtual ~CScriptingModule(){}

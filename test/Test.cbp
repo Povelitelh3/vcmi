@@ -143,6 +143,8 @@
 		<Unit filename="spells/targetConditions/SpellEffectConditionTest.cpp" />
 		<Unit filename="spells/targetConditions/TargetConditionItemFixture.cpp" />
 		<Unit filename="spells/targetConditions/TargetConditionItemFixture.h" />
+		<Unit filename="testdata/erm/std.verm" />
+		<Unit filename="testdata/erm/testy.erm" />
 		<Unit filename="testdata/rmg/1.json" />
 		<Extensions>
 			<code_completion />
