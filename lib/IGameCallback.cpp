@@ -29,6 +29,7 @@
 #include "mapping/CMap.h"
 #include "CPlayerState.h"
 #include "CSkillHandler.h"
+#include "ScriptHandler.h"
 
 #include "serializer/Connection.h"
 

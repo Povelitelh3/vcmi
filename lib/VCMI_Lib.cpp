@@ -30,6 +30,7 @@
 #include "CConsoleHandler.h"
 #include "rmg/CRmgTemplateStorage.h"
 #include "mapping/CMapEditManager.h"
+#include "ScriptHandler.h"
 
 LibClasses * VLC = nullptr;
 
@@ -56,6 +57,11 @@ DLL_LINKAGE void loadDLLClasses(bool onlyEssential)
 const CreatureService * LibClasses::creatureService() const
 {
 	return creh;
+}
+
+const scripting::Service * LibClasses::scriptingService() const
+{
+	return scriptHandler;
 }
 
 const spells::SpellService * LibClasses::spellService() const
@@ -130,6 +136,8 @@ void LibClasses::init(bool onlyEssential)
 
 	createHandler(tplh, "Template", pomtime); //templates need already resolved identifiers (refactor?)
 
+	createHandler(scriptHandler, "Script", pomtime);
+
 	logGlobal->info("\tInitializing handlers: %d ms", totalTime.getDiff());
 
 	modh->load();
@@ -155,6 +163,7 @@ void LibClasses::clear()
 	delete bth;
 	delete tplh;
 	delete terviewh;
+	delete scriptHandler;
 	makeNull();
 }
 
@@ -173,6 +182,7 @@ void LibClasses::makeNull()
 	bth = nullptr;
 	tplh = nullptr;
 	terviewh = nullptr;
+	scriptHandler = nullptr;
 }
 
 LibClasses::LibClasses()

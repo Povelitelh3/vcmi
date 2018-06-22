@@ -44,7 +44,6 @@
 #include "lobby/CBonusSelection.h"
 #include "battle/CBattleInterface.h"
 #include "../lib/CThreadHelper.h"
-#include "../lib/CScriptingModule.h"
 #include "../lib/registerTypes/RegisterTypes.h"
 #include "gui/CGuiHandler.h"
 #include "CMT.h"
@@ -115,7 +114,6 @@ CClient::CClient()
 	registerTypesClientPacks2(*applier);
 	IObjectInterface::cb = this;
 	gs = nullptr;
-	erm = nullptr;
 }
 
 void CClient::newGame()

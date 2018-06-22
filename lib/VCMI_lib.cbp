@@ -205,6 +205,9 @@
 		<Unit filename="ResourceSet.cpp" />
 		<Unit filename="ResourceSet.h" />
 		<Unit filename="ScopeGuard.h" />
+		<Unit filename="ScriptHandler.cpp" />
+		<Unit filename="ScriptHandler.h" />
+		<Unit filename="ScriptingService.h" />
 		<Unit filename="Services.h" />
 		<Unit filename="StartInfo.cpp" />
 		<Unit filename="StartInfo.h" />

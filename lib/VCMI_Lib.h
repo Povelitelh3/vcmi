@@ -28,6 +28,11 @@ class CBonusTypeHandler;
 class CTerrainViewPatternConfig;
 class CRmgTemplateStorage;
 
+namespace scripting
+{
+	class ScriptHandler;
+}
+
 /// Loads and constructs several handlers
 class DLL_LINKAGE LibClasses : public Services
 {
@@ -39,6 +44,7 @@ public:
 	bool IS_AI_ENABLED; //unused?
 
 	const CreatureService * creatureService() const override;
+	const scripting::Service * scriptingService() const override;
 	const spells::SpellService * spellService() const override;
 
 	const IBonusTypeHandler * getBth() const; //deprecated
@@ -55,6 +61,7 @@ public:
 	CModHandler * modh;
 	CTerrainViewPatternConfig * terviewh;
 	CRmgTemplateStorage * tplh;
+	scripting::ScriptHandler * scriptHandler;
 
 	LibClasses(); //c-tor, loads .lods and NULLs handlers
 	~LibClasses();
@@ -81,6 +88,12 @@ public:
 		h & modh;
 		h & IS_AI_ENABLED;
 		h & bth;
+
+		if(version >= 790)
+		{
+			h & scriptHandler;
+		}
+
 		if(!h.saving)
 		{
 			callWhenDeserializing();

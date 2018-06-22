@@ -156,6 +156,7 @@ set(lib_SRCS
 		NetPacksLib.cpp
 		StartInfo.cpp
 		ResourceSet.cpp
+		ScriptHandler.cpp
 		VCMIDirs.cpp
 		VCMI_Lib.cpp
 
@@ -341,6 +342,8 @@ set(lib_HEADERS
 		NetPacks.h
 		NetPacksLobby.h
 		ResourceSet.h
+		ScriptHandler.h
+		ScriptingService.h
 		ScopeGuard.h
 		StartInfo.h
 		StringConstants.h

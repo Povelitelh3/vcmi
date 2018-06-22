@@ -135,7 +135,7 @@ namespace VERMInterpreter
 		static const int NUM_LOCALS = 100;
 		static const int NUM_STRINGS = 10;
 		static const int NUM_FLOATINGS = 100;
-		
+
 		int & getParam(int num);
 		int & getLocal(int num);
 		std::string & getString(int num);
@@ -431,7 +431,7 @@ namespace VERMInterpreter
 // 			else
 // 				throw EVermScriptExecError("Getting improved variant with wrongly specified type");
 // 		}
-// 		
+//
 // 		IntVarinant(const VNode & val) : TBasicVariant(val)
 // 		{}
 // 		IntVarinant(const VNIL & val) : TBasicVariant(val)
@@ -452,12 +452,12 @@ namespace VERMInterpreter
 // 		{
 // 			return *this;
 // 		}
-// 
+//
 // 		IntVarinant()
 // 		{}
 // 	};
 
-	
+
 
 	///main environment class, manages symbols
 	class Environment
@@ -841,7 +841,7 @@ public:
 	virtual void heroVisit(const CGHeroInstance *visitor, const CGObjectInstance *visitedObj, bool start) override;
 	virtual void init() override;//sets up environment etc.
 	virtual void executeUserCommand(const std::string &cmd) override;
-	virtual void giveInfoCB(CPrivilegedInfoCallback *cb) override;
+	virtual void giveInfoCB(CGameInfoCallback *cb) override;
 	virtual void giveActionCB(IGameEventRealizer *cb) override;
 
 	virtual void battleStart(const CCreatureSet *army1, const CCreatureSet *army2, int3 tile, const CGHeroInstance *hero1, const CGHeroInstance *hero2, bool side) override;

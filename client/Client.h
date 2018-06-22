@@ -28,7 +28,6 @@ class CGameInterface;
 class CCallback;
 struct BattleAction;
 class CClient;
-class CScriptingModule;
 struct CPathsInfo;
 class BinaryDeserializer;
 class BinarySerializer;
@@ -117,7 +116,6 @@ public:
 
 	boost::optional<BattleAction> curbaction;
 
-	CScriptingModule * erm;
 	CClient();
 
 	void newGame();

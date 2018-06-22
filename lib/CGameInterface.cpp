@@ -126,7 +126,7 @@ std::shared_ptr<CBattleGameInterface> CDynLibHandler::getNewBattleAI(std::string
 	return createAnyAI<CBattleGameInterface>(dllname, "GetNewBattleAI");
 }
 
-std::shared_ptr<CScriptingModule> CDynLibHandler::getNewScriptingModule(std::string dllname)
+std::shared_ptr<CScriptingModule> CDynLibHandler::getNewScriptingModule(const boost::filesystem::path & dllname)
 {
 	return createAny<CScriptingModule>(dllname, "GetNewModule");
 }

@@ -2,9 +2,9 @@ include_directories(${CMAKE_HOME_DIRECTORY} ${CMAKE_HOME_DIRECTORY}/include ${CM
 
 set(lib_SRCS
 		StdInc.cpp
-        ERMParser.cpp
-        ERMInterpreter.cpp
-        ERMScriptModule.cpp
+		ERMParser.cpp
+		ERMInterpreter.cpp
+		ERMScriptModule.cpp
 )
 
 add_library(vcmiERM SHARED ${lib_SRCS})

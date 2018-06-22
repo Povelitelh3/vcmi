@@ -2759,12 +2759,12 @@ void ERMInterpreter::executeUserCommand(const std::string &cmd)
 	}
 }
 
-void ERMInterpreter::giveInfoCB(CPrivilegedInfoCallback *cb)
+void ERMInterpreter::giveInfoCB(CGameInfoCallback * cb)
 {
 	icb = cb;
 }
 
-void ERMInterpreter::giveActionCB(IGameEventRealizer *cb)
+void ERMInterpreter::giveActionCB(IGameEventRealizer * cb)
 {
 	acb = cb;
 }

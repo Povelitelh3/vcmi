@@ -11,5 +11,5 @@
 
 #include "../../lib/CScriptingModule.h"
 
-extern IGameEventRealizer *acb;
-extern CPrivilegedInfoCallback *icb;
+extern IGameEventRealizer * acb;
+extern CGameInfoCallback * icb;
