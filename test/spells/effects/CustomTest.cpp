@@ -46,10 +46,13 @@ protected:
 
 TEST_F(CustomTest, ApplicableRedirected)
 {
+	EXPECT_CALL(mechanicsMock, scriptingService()).WillRepeatedly(Return(&serviceMock));
 
 	EXPECT_CALL(serviceMock, resolveScript(Eq(SCRIPT_NAME))).WillOnce(Return(&scriptMock));
 	//TODO: we should cache even isolated context in client|server objects
 	EXPECT_CALL(scriptMock, createIsolatedContext()).WillOnce(Return(contextMock));
+
+	EXPECT_CALL(*contextMock, init(_)).Times(1);
 
 	JsonNode response(JsonNode::JsonType::DATA_VECTOR);
 	response.Vector().push_back(JsonUtils::intNode(1));

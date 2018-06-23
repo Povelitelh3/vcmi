@@ -10,21 +10,14 @@
 #pragma once
 
 #include "IGameEventsReceiver.h"
+#include "ScriptHandler.h"
 
-class IGameEventCallback;
-class CGameInfoCallback;
-
-
-
-class CScriptingModule : public IGameEventsReceiver, public IBattleEventsReceiver
+class CScriptingModule
 {
 public:
-	virtual void executeUserCommand(const std::string &cmd){}; //DEPRECATED
-	virtual void init(){}; //called upon the start of game (after map randomization, before first turn) //DEPRECATED
-	virtual void giveActionCB(IGameEventCallback * cb){}; //DEPRECATED
-	virtual void giveInfoCB(const CGameInfoCallback * cb){}; //DEPRECATED
-
 	CScriptingModule(){}
 	virtual ~CScriptingModule(){}
+
+    virtual std::shared_ptr<scripting::Context> createContextFor(const scripting::ScriptImpl * source) const = 0;
 };
 

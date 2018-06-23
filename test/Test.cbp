@@ -87,6 +87,9 @@
 		<Unit filename="battle/CUnitStateMagicTest.cpp" />
 		<Unit filename="battle/CUnitStateTest.cpp" />
 		<Unit filename="battle/battle_UnitTest.cpp" />
+		<Unit filename="erm/ERMFixture.cpp" />
+		<Unit filename="erm/ERMFixture.h" />
+		<Unit filename="erm/ExamplesTest.cpp" />
 		<Unit filename="game/CGameStateTest.cpp" />
 		<Unit filename="googletest/googlemock/src/gmock-all.cc" />
 		<Unit filename="googletest/googletest/src/gtest-all.cc" />
@@ -101,6 +104,9 @@
 		<Unit filename="mock/mock_CreatureService.h" />
 		<Unit filename="mock/mock_IGameCallback.cpp" />
 		<Unit filename="mock/mock_IGameCallback.h" />
+		<Unit filename="mock/mock_IGameEventCallback.h" />
+		<Unit filename="mock/mock_IGameEventRealizer.h" />
+		<Unit filename="mock/mock_IGameInfoCallback.h" />
 		<Unit filename="mock/mock_MapService.cpp" />
 		<Unit filename="mock/mock_MapService.h" />
 		<Unit filename="mock/mock_UnitEnvironment.h" />

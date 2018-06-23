@@ -26,5 +26,19 @@ extern "C" DLL_EXPORT void GetAiName(char* name)
 
 extern "C" DLL_EXPORT void GetNewModule(std::shared_ptr<CScriptingModule> &out)
 {
-	out = std::make_shared<ERMInterpreter>();
+	out = std::make_shared<ERMScriptModule>();
+}
+
+ERMScriptModule::ERMScriptModule()
+{
+
+}
+
+std::shared_ptr<scripting::Context> ERMScriptModule::createContextFor(const scripting::ScriptImpl * source) const
+{
+	std::shared_ptr<ERMInterpreter> ret = std::make_shared<ERMInterpreter>();
+
+	ret->loadScript(source->sourcePath, source->source);
+
+	return ret;
 }

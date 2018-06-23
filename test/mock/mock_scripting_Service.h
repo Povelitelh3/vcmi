@@ -19,7 +19,7 @@ class ServiceMock : public Service
 {
 public:
 
-	MOCK_CONST_METHOD1(resolveScript, const Script *(std::string));
+	MOCK_CONST_METHOD1(resolveScript, const Script *(const std::string &));
 };
 
 }

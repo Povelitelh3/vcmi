@@ -14,15 +14,20 @@
 #include "IHandlerBase.h"
 
 class JsonNode;
+class JsonSerializeFormat;
 class CScriptingModule;
 
 namespace scripting
 {
 
+class ScriptImpl;
+class ScriptHandler;
+
 using ModulePtr = std::shared_ptr<CScriptingModule>;
 using ModulesMap = std::map<std::string, ModulePtr>;
+using ScriptMap = std::map<std::string, ScriptImpl *>;
 
-class ScriptImpl : public Script
+class DLL_LINKAGE ScriptImpl : public Script
 {
 public:
 	enum class PersistenceType
@@ -39,26 +44,42 @@ public:
 		BOTH
 	};
 
+	std::string sourcePath;
+	std::string source;
+
 	PersistenceType persistenceType;
 	RunOn runOn;
 
 	ModulePtr host;
 
-	ScriptImpl();
+	ScriptImpl(const ScriptHandler * owner_);
 	virtual ~ScriptImpl();
+
+	void serializeJson(JsonSerializeFormat & handler);
+
+	std::shared_ptr<Context> createIsolatedContext() const override;
+private:
+	const ScriptHandler * owner;
+
+	void afterLoad();
 };
 
-class ScriptHandler : public ::IHandlerBase, public Service
+class DLL_LINKAGE ScriptHandler : public ::IHandlerBase, public Service
 {
 public:
 	ScriptHandler();
 	virtual ~ScriptHandler();
 
+	const Script * resolveScript(const std::string & name) const override;
+
 	std::vector<bool> getDefaultAllowed() const override;
 	std::vector<JsonNode> loadLegacyData(size_t dataSize) override;
 
+	ScriptImpl * loadFromJson(const JsonNode & json) const;
+
 	void loadObject(std::string scope, std::string name, const JsonNode & data) override;
 	void loadObject(std::string scope, std::string name, const JsonNode & data, size_t index) override;
+
 
 	template <typename Handler> void serialize(Handler & h, const int version)
 	{
@@ -68,7 +89,11 @@ public:
 protected:
 
 private:
+
+	friend class ScriptImpl;
+
 	ModulesMap knownModules;
+	ScriptMap objects;
 };
 
 }

@@ -32,6 +32,12 @@ namespace vstd
 	class RNG;
 }
 
+namespace scripting
+{
+	class Service;
+}
+
+
 ///callback to be provided by server
 class DLL_LINKAGE SpellCastEnvironment : public spells::PacketSender
 {
@@ -255,6 +261,7 @@ public:
 
 	//Global environment facade
 	virtual const CreatureService * creatureService() const = 0;
+	virtual const scripting::Service * scriptingService() const = 0;
 	virtual const SpellService * spellService() const = 0;
 
 	const CBattleInfoCallback * cb;
@@ -308,8 +315,8 @@ public:
 	std::vector<AimType> getTargetTypes() const override;
 
 	const CreatureService * creatureService() const override;
+	const scripting::Service * scriptingService() const override;
 	const SpellService * spellService() const override;
-
 protected:
 	const CSpell * owner;
 	Mode mode;

@@ -1,5 +1,5 @@
 /*
- * mock_scripting_Context.h, part of VCMI engine
+ * ERMFixture.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -13,15 +13,23 @@
 #include "../../../lib/JsonNode.h"
 #include "../../../lib/ScriptingService.h"
 
-namespace scripting
+namespace test
 {
 
-class ContextMock : public Context
+using namespace ::testing;
+using namespace ::scripting;
+
+class ERMFixture
 {
 public:
-	MOCK_METHOD2(apiQuery, JsonNode(const std::string &, const JsonNode &));
-	MOCK_METHOD1(init, void(const IGameInfoCallback *));
-	MOCK_METHOD1(giveActionCB, void(IGameEventRealizer *));
+	ERMFixture();
+	virtual ~ERMFixture();
+
+protected:
+	void setUp();
+
+private:
 };
+
 
 }

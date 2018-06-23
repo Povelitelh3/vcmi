@@ -742,6 +742,11 @@ const CreatureService * BaseMechanics::creatureService() const
 	return VLC->creatureService(); //todo: redirect
 }
 
+const scripting::Service * BaseMechanics::scriptingService() const
+{
+	return VLC->scriptingService(); //todo: redirect
+}
+
 const SpellService * BaseMechanics::spellService() const
 {
 	return VLC->spellService(); //todo: redirect

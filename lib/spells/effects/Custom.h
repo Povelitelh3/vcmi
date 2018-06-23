@@ -12,6 +12,12 @@
 
 #include "Effect.h"
 
+namespace scripting
+{
+	class Script;
+	class Context;
+}
+
 namespace spells
 {
 namespace effects
@@ -40,6 +46,9 @@ protected:
 	void serializeJsonEffect(JsonSerializeFormat & handler) override;
 
 private:
+	std::string scriptName;
+
+	std::shared_ptr<scripting::Context> resolveScript(const Mechanics * m) const;
 };
 
 } // namespace effects

@@ -771,7 +771,7 @@ public:
 	OPERATOR_DEFINITION_INTEGER(%)
 };
 
-class ERMInterpreter : public CScriptingModule
+class ERMInterpreter : public ::scripting::Context, public IGameEventsReceiver, public IBattleEventsReceiver
 {
 /*not so*/ public:
 // 	friend class ScriptScanner;
@@ -825,8 +825,8 @@ class ERMInterpreter : public CScriptingModule
 	VERMInterpreter::VOptionList evalEach( VERMInterpreter::VermTreeIterator list, VERMInterpreter::Environment * env = nullptr );
 
 public:
-	IGameEventCallback * acb;
-	const CGameInfoCallback * icb;
+	IGameEventRealizer * acb;
+	const IGameInfoCallback * icb;
 
 	typedef std::map< int, std::vector<int> > TIDPattern;
 	void executeInstructions(); //called when starting a new game, before most of the map settings are done
@@ -834,7 +834,6 @@ public:
 	void executeTriggerType(const char *trigger, int id); //convenience version of above, for pre-trigger when there is only one argument
 	void executeTriggerType(const char *trigger); //convenience version of above, for pre-trigger when there are no args
 	void setCurrentlyVisitedObj(int3 pos); //sets v998 - v1000 to given value
-	void scanForScripts();
 
 	enum EPrintMode{ALL, ERM_ONLY, VERM_ONLY};
 	void printScripts(EPrintMode mode = ALL);
@@ -845,12 +844,17 @@ public:
 	bool checkCondition( ERM::Tcondition cond );
 	int getRealLine(const VERMInterpreter::LinePointer &lp);
 
-	//overload CScriptingModule
+	void loadScript(const std::string & name, const std::string & source);
+
+	JsonNode apiQuery(const std::string & name, const JsonNode & parameters) override;
+
+	void init(const IGameInfoCallback * cb) override;//sets up environment etc.
+//	virtual void executeUserCommand(const std::string &cmd) override;
+
+	void giveActionCB(IGameEventRealizer * cb) override;
+
+
 	virtual void heroVisit(const CGHeroInstance *visitor, const CGObjectInstance *visitedObj, bool start) override;
-	virtual void init() override;//sets up environment etc.
-	virtual void executeUserCommand(const std::string &cmd) override;
-	virtual void giveInfoCB(const CGameInfoCallback * cb) override;
-	virtual void giveActionCB(IGameEventCallback * cb) override;
 
 	virtual void battleStart(const CCreatureSet *army1, const CCreatureSet *army2, int3 tile, const CGHeroInstance *hero1, const CGHeroInstance *hero2, bool side) override;
 
@@ -866,4 +870,9 @@ public:
 	}
 
     void checkActionCallback() const;
+
+    //action helpers
+
+	void showInfoDialog(const std::string & msg, PlayerColor player);
+
 };

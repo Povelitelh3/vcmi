@@ -13,6 +13,7 @@
 #include <cctype>
 #include "../../lib/mapObjects/CObjectHandler.h"
 #include "../../lib/mapObjects/MapObjects.h"
+#include "../../lib/NetPacks.h"
 #include "../../lib/CHeroHandler.h"
 #include "../../lib/CCreatureHandler.h"
 #include "../../lib/VCMIDirs.h"
@@ -363,41 +364,6 @@ namespace ERMPrinter
 	}
 }
 
-void ERMInterpreter::scanForScripts()
-{
-	using namespace boost::filesystem;
-	//parser checking
-	const path dataPath = VCMIDirs::get().dataPaths().back() / "Data" / "s";
-	if(!exists(dataPath))
-	{
-		logGlobal->warn("Warning: Folder %s doesn't exist!", dataPath.string());
-		return;
-	}
-	directory_iterator enddir;
-	for (directory_iterator dir(dataPath); dir!=enddir; dir++)
-	{
-		if(is_regular(dir->status()))
-		{
-			const std::string ext = boost::to_upper_copy(dir->path().extension().string());
-			if (ext == ".ERM" || ext == ".VERM")
-			{
-				ERMParser ep(dir->path().string());
-				FileInfo * finfo = new FileInfo();
-				finfo->filename = dir->path().string();
-
-				std::vector<LineInfo> buf = ep.parseFile();
-				finfo->length = buf.size();
-				files.push_back(finfo);
-
-				for(int g=0; g<buf.size(); ++g)
-				{
-					scripts[LinePointer(finfo, g, buf[g].realLineNum)] = buf[g].tl;
-				}
-			}
-		}
-	}
-}
-
 void ERMInterpreter::printScripts(EPrintMode mode)
 {
 	std::map< LinePointer, ERM::TLine >::const_iterator prevIt;
@@ -468,9 +434,11 @@ ERMInterpreter::ERMInterpreter()
 {
 	curFunc = nullptr;
 	curTrigger = nullptr;
-	globalEnv = nullptr;
-	topDyn = nullptr;
-	ermGlobalEnv = nullptr;
+
+	ermGlobalEnv = new ERMEnvironment();
+	globalEnv = new Environment();
+
+	topDyn = globalEnv;
 }
 
 ERMInterpreter::~ERMInterpreter()
@@ -916,8 +884,7 @@ struct IFPerformer : StandardReceiverVisitor<TUnusedType>
 	{
 		std::string msgToFormat = msg;
 		StringFormatter::format(interp, msgToFormat);
-		interp->checkActionCallback();
-		interp->acb->showInfoDialog(msgToFormat, interp->icb->getLocalPlayer());
+		interp->showInfoDialog(msgToFormat, interp->icb->getLocalPlayer());
 	}
 };
 
@@ -2413,20 +2380,51 @@ std::string IexpValStr::getName() const
 		return "Unknown variable";
 }
 
-void ERMInterpreter::init()
+void ERMInterpreter::loadScript(const std::string & name, const std::string & source)
 {
-	ermGlobalEnv = new ERMEnvironment();
-	globalEnv = new Environment();
+	ERMParser ep(source);
+	FileInfo * finfo = new FileInfo();
+	finfo->filename = name;
 
-	topDyn = globalEnv;
+	std::vector<LineInfo> buf = ep.parseFile();
+	finfo->length = buf.size();
+	files.push_back(finfo);
 
+	for(int g=0; g<buf.size(); ++g)
+	{
+		scripts[LinePointer(finfo, g, buf[g].realLineNum)] = buf[g].tl;
+	}
+}
+
+
+JsonNode ERMInterpreter::apiQuery(const std::string & name, const JsonNode & parameters)
+{
+	//TODO: ERMInterpreter::apiQuery
+
+	try
+	{
+		return JsonNode();
+	}
+	catch(VERMInterpreter::EInterpreterProblem & ex)
+	{
+		logMod->error(ex.what());
+		return JsonNode();
+	}
+}
+
+void ERMInterpreter::init(const IGameInfoCallback * cb)
+{
+	curFunc = nullptr;
+	curTrigger = nullptr;
+	icb = cb;
 
 	//TODO: reset?
 	for(int g = 0; g < ARRAY_COUNT(funcVars); ++g)
 		funcVars[g].reset();
 
-	scanForScripts();
 	scanScripts();
+
+	//TODO: execute every time for stateless context, only on new game otherwise
 
 	executeInstructions();
 	executeTriggerType("PI");
@@ -2464,6 +2462,17 @@ void ERMInterpreter::checkActionCallback() const
 {
 	if(!acb)
 		throw EScriptExecError("Game state change is not permitted in this environment");
+}
+
+void ERMInterpreter::showInfoDialog(const std::string & msg, PlayerColor player)
+{
+	//TODO: move to IF_M
+	checkActionCallback();
+
+	InfoWindow iw;
+	iw.player = player;
+	iw.text << msg;
+	acb->commitPackage(&iw);
 }
 
 struct VOptionPrinter : boost::static_visitor<>
@@ -2801,34 +2810,29 @@ VOptionList ERMInterpreter::evalEach(VermTreeIterator list, Environment * env)
 	return ret;
 }
 
-void ERMInterpreter::executeUserCommand(const std::string &cmd)
-{
-	logGlobal->trace("ERM here: received command: %s", cmd);
-	if(cmd.size() < 3)
-	{
-		logGlobal->error("That can't be a valid command: %s", cmd);
-		return;
-	}
-	try
-	{
-		if(cmd[0] == '!') //should be a neat (V)ERM command
-		{
-			ERM::TLine line = ERMParser::parseLine(cmd);
-			executeLine(line);
-		}
-	}
-	catch(std::exception &e)
-	{
-		logGlobal->error("Failed executing user command! Exception info: %s", e.what());
-	}
-}
+//void ERMInterpreter::executeUserCommand(const std::string &cmd)
+//{
+//	logGlobal->trace("ERM here: received command: %s", cmd);
+//	if(cmd.size() < 3)
+//	{
+//		logGlobal->error("That can't be a valid command: %s", cmd);
+//		return;
+//	}
+//	try
+//	{
+//		if(cmd[0] == '!') //should be a neat (V)ERM command
+//		{
+//			ERM::TLine line = ERMParser::parseLine(cmd);
+//			executeLine(line);
+//		}
+//	}
+//	catch(std::exception &e)
+//	{
+//		logGlobal->error("Failed executing user command! Exception info: %s", e.what());
+//	}
+//}
 
-void ERMInterpreter::giveInfoCB(const CGameInfoCallback * cb)
-{
-	icb = cb;
-}
-
-void ERMInterpreter::giveActionCB(IGameEventCallback * cb)
+void ERMInterpreter::giveActionCB(IGameEventRealizer * cb)
 {
 	acb = cb;
 }

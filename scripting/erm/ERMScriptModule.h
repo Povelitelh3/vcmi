@@ -13,6 +13,8 @@
 
 class ERMScriptModule : public CScriptingModule
 {
-
+public:
+	ERMScriptModule();
+	std::shared_ptr<scripting::Context> createContextFor(const scripting::ScriptImpl * source) const override;
 };
 

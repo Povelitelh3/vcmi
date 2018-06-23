@@ -12,6 +12,8 @@
 #include "Custom.h"
 #include "Registry.h"
 #include "../ISpellMechanics.h"
+#include "../../ScriptingService.h"
+#include "../../serializer/JsonSerializeFormat.h"
 
 static const std::string EFFECT_NAME = "core:custom";
 
@@ -44,7 +46,19 @@ void Custom::adjustAffectedHexes(std::set<BattleHex> & hexes, const Mechanics * 
 
 bool Custom::applicable(Problem & problem, const Mechanics * m) const
 {
-	return false;
+	std::shared_ptr<scripting::Context> context = resolveScript(m);
+	if(!context)
+		return false;
+
+	JsonNode response = context->apiQuery(EVENT_APPLICABLE_GENERAL, JsonNode());
+
+	if(response.Vector().size() != 1)
+	{
+		logMod->error("Invalid API response from script %s.", scriptName);
+		logMod->debug(response.toJson(true));
+		return false;
+	}
+	return response.Vector().at(0).Integer() == 1;
 }
 
 bool Custom::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
@@ -69,7 +83,17 @@ EffectTarget Custom::transformTarget(const Mechanics * m, const Target & aimPoin
 
 void Custom::serializeJsonEffect(JsonSerializeFormat & handler)
 {
+	handler.serializeString("script", scriptName);
+}
 
+std::shared_ptr<scripting::Context> Custom::resolveScript(const Mechanics * m) const
+{
+	auto script = m->scriptingService()->resolveScript(scriptName);
+
+	if(!script)
+		return std::shared_ptr<scripting::Context>();
+
+	return script->createIsolatedContext();
 }
 
 
