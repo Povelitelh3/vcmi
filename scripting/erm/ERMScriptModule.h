@@ -11,5 +11,8 @@
 
 #include "../../lib/CScriptingModule.h"
 
-extern IGameEventRealizer * acb;
-extern CGameInfoCallback * icb;
+class ERMScriptModule : public CScriptingModule
+{
+
+};
+

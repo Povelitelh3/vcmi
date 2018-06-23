@@ -18,6 +18,17 @@
 namespace scripting
 {
 
+ScriptImpl::ScriptImpl()
+	: persistenceType(PersistenceType::STATELESS),
+	runOn(RunOn::SERVER),
+	host()
+{
+
+}
+
+ScriptImpl::~ScriptImpl() = default;
+
+
 ScriptHandler::ScriptHandler()
 {
 	//TODO: adjust when new languages will be added
@@ -55,10 +66,6 @@ void ScriptHandler::loadObject(std::string scope, std::string name, const JsonNo
 	throw std::runtime_error("No legacy data load allowed for scripts");
 }
 
-bool ScriptHandler::isInteractive() const
-{
-	return (bool)interactiveModule;
-}
 
 
 }

@@ -825,6 +825,9 @@ class ERMInterpreter : public CScriptingModule
 	VERMInterpreter::VOptionList evalEach( VERMInterpreter::VermTreeIterator list, VERMInterpreter::Environment * env = nullptr );
 
 public:
+	IGameEventCallback * acb;
+	const CGameInfoCallback * icb;
+
 	typedef std::map< int, std::vector<int> > TIDPattern;
 	void executeInstructions(); //called when starting a new game, before most of the map settings are done
 	void executeTriggerType(VERMInterpreter::TriggerType tt, bool pre, const TIDPattern & identifier, const std::vector<int> &funParams=std::vector<int>()); //use this to run triggers
@@ -846,8 +849,8 @@ public:
 	virtual void heroVisit(const CGHeroInstance *visitor, const CGObjectInstance *visitedObj, bool start) override;
 	virtual void init() override;//sets up environment etc.
 	virtual void executeUserCommand(const std::string &cmd) override;
-	virtual void giveInfoCB(CGameInfoCallback *cb) override;
-	virtual void giveActionCB(IGameEventRealizer *cb) override;
+	virtual void giveInfoCB(const CGameInfoCallback * cb) override;
+	virtual void giveActionCB(IGameEventCallback * cb) override;
 
 	virtual void battleStart(const CCreatureSet *army1, const CCreatureSet *army2, int3 tile, const CGHeroInstance *hero1, const CGHeroInstance *hero2, bool side) override;
 
@@ -862,4 +865,5 @@ public:
 			throw VERMInterpreter::EScriptExecError("Wrong cast attempted, object is not of a desired type!");
 	}
 
+    void checkActionCallback() const;
 };

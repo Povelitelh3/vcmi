@@ -416,6 +416,8 @@
 		<Unit filename="spells/effects/Catapult.h" />
 		<Unit filename="spells/effects/Clone.cpp" />
 		<Unit filename="spells/effects/Clone.h" />
+		<Unit filename="spells/effects/Custom.cpp" />
+		<Unit filename="spells/effects/Custom.h" />
 		<Unit filename="spells/effects/Damage.cpp" />
 		<Unit filename="spells/effects/Damage.h" />
 		<Unit filename="spells/effects/Dispel.cpp" />

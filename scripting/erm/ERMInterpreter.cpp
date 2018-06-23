@@ -916,7 +916,8 @@ struct IFPerformer : StandardReceiverVisitor<TUnusedType>
 	{
 		std::string msgToFormat = msg;
 		StringFormatter::format(interp, msgToFormat);
-		acb->showInfoDialog(msgToFormat, icb->getLocalPlayer());
+		interp->checkActionCallback();
+		interp->acb->showInfoDialog(msgToFormat, interp->icb->getLocalPlayer());
 	}
 };
 
@@ -1414,10 +1415,10 @@ struct ERMExpDispatch : boost::static_visitor<>
 				case 1:
 					{
 						int heroNum = interp->getIexp(tid[0]).getInt();
-						if(heroNum == -1)
-							assert(false); //FIXME: use new hero selection mechanics
+						if(heroNum < 0)
+							throw EScriptExecError("Indirect hero selection is not implemented!");
 						else
-							hero = icb->getHeroWithSubid(heroNum);
+							hero = interp->icb->getHeroWithSubid(heroNum);
 
 					}
 					break;
@@ -2459,6 +2460,12 @@ const CGObjectInstance * ERMInterpreter::getObjFrom( int3 pos )
 	return objs.back();
 }
 
+void ERMInterpreter::checkActionCallback() const
+{
+	if(!acb)
+		throw EScriptExecError("Game state change is not permitted in this environment");
+}
+
 struct VOptionPrinter : boost::static_visitor<>
 {
 	void operator()(VNIL const& opt) const
@@ -2816,12 +2823,12 @@ void ERMInterpreter::executeUserCommand(const std::string &cmd)
 	}
 }
 
-void ERMInterpreter::giveInfoCB(CGameInfoCallback * cb)
+void ERMInterpreter::giveInfoCB(const CGameInfoCallback * cb)
 {
 	icb = cb;
 }
 
-void ERMInterpreter::giveActionCB(IGameEventRealizer * cb)
+void ERMInterpreter::giveActionCB(IGameEventCallback * cb)
 {
 	acb = cb;
 }

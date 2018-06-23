@@ -22,7 +22,7 @@ namespace scripting
 using ModulePtr = std::shared_ptr<CScriptingModule>;
 using ModulesMap = std::map<std::string, ModulePtr>;
 
-class Script
+class ScriptImpl : public Script
 {
 public:
 	enum class PersistenceType
@@ -44,8 +44,8 @@ public:
 
 	ModulePtr host;
 
-	Script();
-	virtual ~Script();
+	ScriptImpl();
+	virtual ~ScriptImpl();
 };
 
 class ScriptHandler : public ::IHandlerBase, public Service
@@ -60,9 +60,6 @@ public:
 	void loadObject(std::string scope, std::string name, const JsonNode & data) override;
 	void loadObject(std::string scope, std::string name, const JsonNode & data, size_t index) override;
 
-	bool isInteractive() const override;
-
-
 	template <typename Handler> void serialize(Handler & h, const int version)
 	{
         //TODO: serialize scripts
@@ -72,8 +69,6 @@ protected:
 
 private:
 	ModulesMap knownModules;
-
-	ModulePtr interactiveModule; //may be null
 };
 
 }

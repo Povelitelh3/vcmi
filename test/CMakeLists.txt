@@ -39,6 +39,7 @@ set(test_SRCS
 		spells/effects/EffectFixture.cpp
  		spells/effects/CatapultTest.cpp
  		spells/effects/CloneTest.cpp
+ 		spells/effects/CustomTest.cpp
  		spells/effects/DamageTest.cpp
  		spells/effects/DispelTest.cpp
  		spells/effects/HealTest.cpp
@@ -88,11 +89,16 @@ assign_source_group(${test_SRCS} ${test_HEADERS})
 set(mock_HEADERS
 		mock/mock_battle_IBattleState.h
 		mock/mock_battle_Unit.h
-		mock/mock_UnitInfo.h
-		mock/mock_UnitEnvironment.h
+		mock/mock_Creature.h
+		mock/mock_CreatureService.h
+		mock/mock_scripting_Context.h
+		mock/mock_scripting_Script.h
+		mock/mock_scripting_Service.h
 		mock/mock_spells_Mechanics.h
 		mock/mock_spells_Problem.h
 		mock/mock_spells_Spell.h
+		mock/mock_UnitEnvironment.h
+		mock/mock_UnitInfo.h
 		mock/mock_vstd_RNG.h
 )
 

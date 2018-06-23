@@ -17,8 +17,6 @@
 					<Add option="-Og" />
 					<Add option="-Wextra" />
 					<Add option="-g" />
-					<Add directory="mock" />
-					<Add directory="mock/" />
 				</Compiler>
 				<Linker>
 					<Add directory="$(#boost.lib32)" />
@@ -34,8 +32,6 @@
 					<Add option="-Og" />
 					<Add option="-Wextra" />
 					<Add option="-g" />
-					<Add directory="mock" />
-					<Add directory="mock/" />
 				</Compiler>
 				<Linker>
 					<Add directory="$(#boost.lib64)" />
@@ -111,6 +107,9 @@
 		<Unit filename="mock/mock_UnitInfo.h" />
 		<Unit filename="mock/mock_battle_IBattleState.h" />
 		<Unit filename="mock/mock_battle_Unit.h" />
+		<Unit filename="mock/mock_scripting_Context.h" />
+		<Unit filename="mock/mock_scripting_Script.h" />
+		<Unit filename="mock/mock_scripting_Service.h" />
 		<Unit filename="mock/mock_spells_Mechanics.h" />
 		<Unit filename="mock/mock_spells_Problem.h" />
 		<Unit filename="mock/mock_spells_Spell.h" />
@@ -121,6 +120,7 @@
 		<Unit filename="spells/TargetConditionTest.cpp" />
 		<Unit filename="spells/effects/CatapultTest.cpp" />
 		<Unit filename="spells/effects/CloneTest.cpp" />
+		<Unit filename="spells/effects/CustomTest.cpp" />
 		<Unit filename="spells/effects/DamageTest.cpp" />
 		<Unit filename="spells/effects/DispelTest.cpp" />
 		<Unit filename="spells/effects/EffectFixture.cpp" />

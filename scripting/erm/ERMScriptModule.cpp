@@ -12,9 +12,6 @@
 
 #include "ERMInterpreter.h"
 
-IGameEventRealizer * acb;
-CGameInfoCallback * icb;
-
 
 #ifdef __GNUC__
 #define strcpy_s(a, b, c) strncpy(a, c, b)

@@ -109,6 +109,7 @@ set(lib_SRCS
 
 		spells/effects/Catapult.cpp
 		spells/effects/Clone.cpp
+		spells/effects/Custom.cpp
 		spells/effects/Damage.cpp
 		spells/effects/Dispel.cpp
 		spells/effects/Effect.cpp
@@ -283,6 +284,7 @@ set(lib_HEADERS
 
 		spells/effects/Catapult.h
 		spells/effects/Clone.h
+		spells/effects/Custom.h
 		spells/effects/Damage.h
 		spells/effects/Dispel.h
 		spells/effects/Effect.h

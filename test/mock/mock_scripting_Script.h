@@ -1,5 +1,5 @@
 /*
- * ScriptingService.h, part of VCMI engine
+ * mock_scripting_Script.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -10,27 +10,20 @@
 
 #pragma once
 
+#include "../../../lib/ScriptingService.h"
+
 namespace scripting
 {
 
-class DLL_LINKAGE Context
+class ScriptMock : public Script
 {
 public:
-	virtual ~Context() = default;
-};
 
-class DLL_LINKAGE Script
-{
-public:
-	virtual ~Script() = default;
-};
-
-class DLL_LINKAGE Service
-{
-public:
-	virtual ~Service() = default;
-
+	MOCK_CONST_METHOD0(createIsolatedContext, std::shared_ptr<Context>());
 
 };
 
 }
+
+
+
