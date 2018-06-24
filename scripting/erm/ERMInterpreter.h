@@ -819,6 +819,7 @@ class ERMInterpreter : public ::scripting::Context, public IGameEventsReceiver, 
 public:
 	IGameEventRealizer * acb;
 	const IGameInfoCallback * icb;
+	const CBattleInfoCallback * bicb;
 
 	typedef std::map< int, std::vector<int> > TIDPattern;
 	void executeInstructions(); //called when starting a new game, before most of the map settings are done
@@ -840,7 +841,7 @@ public:
 
 	JsonNode apiQuery(const std::string & name, const JsonNode & parameters) override;
 
-	void init(const IGameInfoCallback * cb) override;//sets up environment etc.
+	void init(const IGameInfoCallback * cb, const CBattleInfoCallback * battleCb) override;//sets up environment etc.
 //	virtual void executeUserCommand(const std::string &cmd) override;
 
 	void giveActionCB(IGameEventRealizer * cb) override;

@@ -25,7 +25,7 @@ public:
 	MOCK_CONST_METHOD1(getAffectedStacks, std::vector<const CStack *>(const Target &));
 
 	MOCK_CONST_METHOD1(canBeCast, bool(Problem &));
-	MOCK_CONST_METHOD1(canBeCastAt, bool(const Target & target));
+	MOCK_CONST_METHOD2(canBeCastAt, bool(Problem &, const Target &));
 
 	MOCK_CONST_METHOD5(applyEffects, void(BattleStateProxy *, vstd::RNG &, const Target &, bool, bool));
 
@@ -69,6 +69,10 @@ public:
 	MOCK_CONST_METHOD0(creatureService, const CreatureService *());
 	MOCK_CONST_METHOD0(scriptingService, const scripting::Service *());
 	MOCK_CONST_METHOD0(spellService, const SpellService *());
+
+	MOCK_CONST_METHOD0(game, const IGameInfoCallback * ());
+	MOCK_CONST_METHOD0(battle, const CBattleInfoCallback * ());
 };
 
 }
+

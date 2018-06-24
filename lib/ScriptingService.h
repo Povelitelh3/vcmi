@@ -13,6 +13,7 @@
 class JsonNode;
 class IGameInfoCallback;
 class IGameEventRealizer;
+class CBattleInfoCallback;
 
 namespace scripting
 {
@@ -22,7 +23,7 @@ class DLL_LINKAGE Context
 public:
 	virtual ~Context() = default;
 
-	virtual void init(const IGameInfoCallback * cb) = 0;
+	virtual void init(const IGameInfoCallback * cb, const CBattleInfoCallback * battleCb) = 0;
 	virtual void giveActionCB(IGameEventRealizer * cb) = 0;
 
 	virtual JsonNode apiQuery(const std::string & name, const JsonNode & parameters) = 0;

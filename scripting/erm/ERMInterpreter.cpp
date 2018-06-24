@@ -2412,11 +2412,12 @@ JsonNode ERMInterpreter::apiQuery(const std::string & name, const JsonNode & par
 	}
 }
 
-void ERMInterpreter::init(const IGameInfoCallback * cb)
+void ERMInterpreter::init(const IGameInfoCallback * cb, const CBattleInfoCallback * battleCb)
 {
 	curFunc = nullptr;
 	curTrigger = nullptr;
 	icb = cb;
+	bicb = battleCb;
 
 	//TODO: reset?
 	for(int g = 0; g < ARRAY_COUNT(funcVars); ++g)
@@ -3077,7 +3078,7 @@ namespace VERMInterpreter
 					throw EVermScriptExecError("< special function takes exactly 2 arguments");
 				TLiteral lhs = getAs<TLiteral>(params.getIth(0)),
 					rhs = getAs<TLiteral>(params.getIth(1));
-				if(lhs < rhs)
+				if(VERMInterpreter::operator<(lhs, rhs))
 					return lhs;
 				else
 					return VNIL();
@@ -3090,7 +3091,7 @@ namespace VERMInterpreter
 
 				TLiteral lhs = getAs<TLiteral>(params.getIth(0)),
 					rhs = getAs<TLiteral>(params.getIth(1));
-				if(lhs <= rhs)
+				if(VERMInterpreter::operator<=(lhs, rhs))
 					return lhs;
 				else
 					return VNIL();
@@ -3103,7 +3104,7 @@ namespace VERMInterpreter
 
 				TLiteral lhs = getAs<TLiteral>(params.getIth(0)),
 					rhs = getAs<TLiteral>(params.getIth(1));
-				if(lhs > rhs)
+				if(VERMInterpreter::operator>(lhs, rhs))
 					return lhs;
 				else
 					return VNIL();
@@ -3116,7 +3117,7 @@ namespace VERMInterpreter
 
 				TLiteral lhs = getAs<TLiteral>(params.getIth(0)),
 					rhs = getAs<TLiteral>(params.getIth(1));
-				if(lhs >= rhs)
+				if(VERMInterpreter::operator>=(lhs, rhs))
 					return lhs;
 				else
 					return VNIL();

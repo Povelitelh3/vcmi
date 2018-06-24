@@ -165,48 +165,6 @@ bool CSpell::canBeCast(spells::Problem & problem, const CBattleInfoCallback * cb
 	spells::BattleCast event(cb, caster, mode, this);
 	auto mechanics = battleMechanics(&event);
 
-	ESpellCastProblem::ESpellCastProblem genProblem = cb->battleCanCastSpell(caster, mode);
-	if(genProblem != ESpellCastProblem::OK)
-		return mechanics->adaptProblem(genProblem, problem);
-
-	switch(mode)
-	{
-	case spells::Mode::HERO:
-		{
-			const CGHeroInstance * castingHero = dynamic_cast<const CGHeroInstance *>(caster);//todo: unify hero|creature spell cost
-			if(!castingHero)
-			{
-				logGlobal->debug("CSpell::canBeCast: invalid caster");
-				genProblem = ESpellCastProblem::NO_HERO_TO_CAST_SPELL;
-			}
-			else if(!castingHero->getArt(ArtifactPosition::SPELLBOOK))
-				genProblem = ESpellCastProblem::NO_SPELLBOOK;
-			else if(!castingHero->canCastThisSpell(this))
-				genProblem = ESpellCastProblem::HERO_DOESNT_KNOW_SPELL;
-			else if(castingHero->mana < cb->battleGetSpellCost(this, castingHero)) //not enough mana
-				genProblem = ESpellCastProblem::NOT_ENOUGH_MANA;
-		}
-		break;
-	}
-
-	if(genProblem != ESpellCastProblem::OK)
-		return mechanics->adaptProblem(genProblem, problem);
-
-	if(!isCombatSpell())
-		return mechanics->adaptProblem(ESpellCastProblem::ADVMAP_SPELL_INSTEAD_OF_BATTLE_SPELL, problem);
-
-	const PlayerColor player = caster->getOwner();
-	const auto side = cb->playerToSide(player);
-
-	if(!side)
-		return mechanics->adaptProblem(ESpellCastProblem::INVALID, problem);
-
-	//effect like Recanter's Cloak. Blocks also passive casting.
-	//TODO: check creature abilities to block
-	//TODO: check any possible caster
-	if(cb->battleMaxSpellLevel(side.get()) < level || cb->battleMinSpellLevel(side.get()) > level)
-		return mechanics->adaptProblem(ESpellCastProblem::SPELL_LEVEL_LIMIT_EXCEEDED, problem);
-
 	return mechanics->canBeCast(problem);
 }
 
@@ -388,34 +346,6 @@ void CSpell::getEffects(std::vector<Bonus> & lst, const int level, const bool cu
 			vstd::amax(*(maxDuration.get()), nb.turnsRemain);
 
 		lst.push_back(nb);
-	}
-}
-
-bool CSpell::canBeCastAt(const CBattleInfoCallback * cb,  spells::Mode mode, const spells::Caster * caster, BattleHex destination) const
-{
-	if(canBeCast(cb, mode, caster))
-	{
-		spells::BattleCast event(cb, caster, mode, this);
-		spells::Target tmp;
-		tmp.emplace_back(destination);
-		return battleMechanics(&event)->canBeCastAt(tmp);
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool CSpell::canBeCastAt(const CBattleInfoCallback * cb,  spells::Mode mode, const spells::Caster * caster, const spells::Target & target) const
-{
-	if(canBeCast(cb, mode, caster))
-	{
-		spells::BattleCast event(cb, caster, mode, this);
-		return battleMechanics(&event)->canBeCastAt(target);
-	}
-	else
-	{
-		return false;
 	}
 }
 

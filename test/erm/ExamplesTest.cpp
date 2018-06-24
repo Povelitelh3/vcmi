@@ -76,7 +76,7 @@ TEST_F(ExamplesTest, HelloWorld)
 
 	std::shared_ptr<Context> ctx = subject->createIsolatedContext();
 	ctx->giveActionCB(&applierMock);
-	ctx->init(&infoMock);
+	ctx->init(&infoMock, battleFake.get());
 }
 
 TEST_F(ExamplesTest, HelloWorldVERM)
@@ -94,7 +94,7 @@ TEST_F(ExamplesTest, HelloWorldVERM)
 
 	std::shared_ptr<Context> ctx = subject->createIsolatedContext();
 	ctx->giveActionCB(&applierMock);
-	ctx->init(&infoMock);
+	ctx->init(&infoMock, battleFake.get());
 
 	std::vector<std::string> expectedTexts =
 	{

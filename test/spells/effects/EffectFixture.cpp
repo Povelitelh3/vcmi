@@ -135,7 +135,8 @@ void EffectFixture::setUp()
 	battleFake = std::make_shared<BattleFake>();
 	battleFake->setUp();
 
-	mechanicsMock.cb = battleFake.get();
+	EXPECT_CALL(mechanicsMock, game()).WillRepeatedly(Return(&gameMock));
+	EXPECT_CALL(mechanicsMock, battle()).WillRepeatedly(Return(battleFake.get()));
 
 	battleProxy = std::make_shared<BattleStateProxy>(battleFake.get());
 

@@ -36,6 +36,7 @@
 #include "CSpellHandler.h"
 
 #include "../CHeroHandler.h"//todo: remove
+#include "../IGameCallback.h"//todo: remove
 
 namespace spells
 {
@@ -153,9 +154,9 @@ void BattleStateProxy::complain(const std::string & problem) const
 }
 
 
-BattleCast::BattleCast(const CBattleInfoCallback * cb, const Caster * caster_, const Mode mode_, const CSpell * spell_)
+BattleCast::BattleCast(const CBattleInfoCallback * cb_, const Caster * caster_, const Mode mode_, const CSpell * spell_)
 	: spell(spell_),
-	cb(cb),
+	cb(cb_),
 	caster(caster_),
 	mode(mode_),
 	magicSkillLevel(),
@@ -165,12 +166,13 @@ BattleCast::BattleCast(const CBattleInfoCallback * cb, const Caster * caster_, c
 	smart(boost::logic::indeterminate),
 	massive(boost::logic::indeterminate)
 {
-
+	gameCb = IObjectInterface::cb; //FIXME: pass player callback (problem is that BattleAI do have one)
 }
 
 BattleCast::BattleCast(const BattleCast & orig, const Caster * caster_)
 	: spell(orig.spell),
 	cb(orig.cb),
+	gameCb(orig.gameCb),
 	caster(caster_),
 	mode(Mode::MAGIC_MIRROR),
 	magicSkillLevel(orig.magicSkillLevel),
@@ -202,6 +204,11 @@ const Caster * BattleCast::getCaster() const
 const CBattleInfoCallback * BattleCast::getBattle() const
 {
 	return cb;
+}
+
+const IGameInfoCallback * BattleCast::getGame() const
+{
+	return gameCb;
 }
 
 BattleCast::OptionalValue BattleCast::getSpellLevel() const
@@ -433,8 +440,7 @@ std::unique_ptr<ISpellMechanicsFactory> ISpellMechanicsFactory::get(const CSpell
 
 ///Mechanics
 Mechanics::Mechanics()
-	: cb(nullptr),
-	caster(nullptr),
+	: caster(nullptr),
 	casterSide(0)
 {
 
@@ -450,6 +456,8 @@ BaseMechanics::BaseMechanics(const IBattleCast * event)
 	massive(event->isMassive())
 {
 	cb = event->getBattle();
+	gameCb = event->getGame();
+
 	caster = event->getCaster();
 
 	//FIXME: do not crash on invalid side
@@ -751,6 +759,17 @@ const SpellService * BaseMechanics::spellService() const
 {
 	return VLC->spellService(); //todo: redirect
 }
+
+const IGameInfoCallback * BaseMechanics::game() const
+{
+	return gameCb;
+}
+
+const CBattleInfoCallback * BaseMechanics::battle() const
+{
+	return cb;
+}
+
 
 } //namespace spells
 

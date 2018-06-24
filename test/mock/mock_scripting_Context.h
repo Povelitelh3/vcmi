@@ -20,7 +20,7 @@ class ContextMock : public Context
 {
 public:
 	MOCK_METHOD2(apiQuery, JsonNode(const std::string &, const JsonNode &));
-	MOCK_METHOD1(init, void(const IGameInfoCallback *));
+	MOCK_METHOD2(init, void(const IGameInfoCallback *, const CBattleInfoCallback *));
 	MOCK_METHOD1(giveActionCB, void(IGameEventRealizer *));
 };
 

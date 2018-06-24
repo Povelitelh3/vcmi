@@ -16,6 +16,7 @@
 #include "mock/mock_spells_Problem.h"
 #include "mock/mock_spells_Spell.h"
 #include "mock/mock_spells_SpellService.h"
+#include "mock/mock_IGameInfoCallback.h"
 
 #include "mock/mock_Creature.h"
 #include "mock/mock_CreatureService.h"
@@ -86,6 +87,7 @@ public:
 	::testing::StrictMock<CreatureMock> creatureStub;
 	::testing::StrictMock<::spells::SpellServiceMock> spellServiceMock;
 	::testing::StrictMock<::spells::SpellMock> spellStub;
+	::testing::StrictMock<IGameInfoCallbackMock> gameMock;
 	vstd::RNGMock rngMock;
 
 	UnitsFake unitsFake;

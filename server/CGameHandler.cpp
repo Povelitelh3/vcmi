@@ -4567,7 +4567,10 @@ bool CGameHandler::makeCustomAction(BattleAction & ba)
 			parameters.target = ba.getTarget(gs->curB);
 
 			spells::detail::ProblemImpl problem;
-			if(!s->canBeCast(problem, gs->curB, spells::Mode::HERO, h))//todo: should we check aimed cast?
+
+			auto m = s->battleMechanics(&parameters);
+
+			if(!m->canBeCast(problem))//todo: should we check aimed cast?
 			{
 				logGlobal->warn("Spell cannot be cast!");
 				std::vector<std::string> texts;
@@ -5380,7 +5383,16 @@ void CGameHandler::attackCasting(bool ranged, Bonus::BonusType attackMode, const
 			const CSpell * spell = SpellID(spellID).toSpell();
 			spells::AbilityCaster caster(attacker, spellLevel);
 
-			if(!spell->canBeCastAt(gs->curB, spells::Mode::PASSIVE, &caster, defender->getPosition()))
+			spells::Target target;
+			target.emplace_back(defender);
+
+			spells::BattleCast parameters(gs->curB, &caster, spells::Mode::PASSIVE, spell);
+
+			auto m = spell->battleMechanics(&parameters);
+
+			spells::detail::ProblemImpl ingored;
+
+			if(!m->canBeCastAt(ingored, target))
 				continue;
 
 			//check if spell should be cast (probability handling)
@@ -5390,8 +5402,7 @@ void CGameHandler::attackCasting(bool ranged, Bonus::BonusType attackMode, const
 			//casting
 			if(castMe)
 			{
-				spells::BattleCast parameters(gs->curB, &caster, spells::Mode::PASSIVE, spell);
-				parameters.aimToUnit(defender);
+				parameters.target = target;
 				parameters.cast(spellEnv);
 			}
 		}

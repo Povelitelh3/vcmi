@@ -10,8 +10,14 @@
 
 #pragma once
 
+#include <vstd/RNG.h>
 #include "../../../lib/JsonNode.h"
+#include "../../../lib/HeroBonus.h"
 #include "../../../lib/ScriptingService.h"
+#include "../../../lib/NetPacksBase.h"
+
+#include "../mock/mock_battle_IBattleState.h"
+#include "../../../lib/battle/CBattleInfoCallback.h"
 
 namespace test
 {
@@ -22,6 +28,16 @@ using namespace ::scripting;
 class ERMFixture
 {
 public:
+	class BattleFake : public CBattleInfoCallback, public BattleStateMock
+	{
+	public:
+		BattleFake();
+
+		void setUp();
+	};
+
+	std::shared_ptr<BattleFake> battleFake;
+
 	ERMFixture();
 	virtual ~ERMFixture();
 

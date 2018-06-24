@@ -22,6 +22,7 @@ class CRandomGenerator;
 class CMap;
 class CGameInfoCallback;
 class CBattleInfoCallback;
+class IGameInfoCallback;
 class JsonNode;
 class CStack;
 class CGObjectInstance;
@@ -93,6 +94,7 @@ public:
 	virtual Mode getMode() const = 0;
 	virtual const Caster * getCaster() const = 0;
 	virtual const CBattleInfoCallback * getBattle() const = 0;
+	virtual const IGameInfoCallback * getGame() const = 0;
 
 	virtual OptionalValue getSpellLevel() const = 0;
 
@@ -115,7 +117,7 @@ public:
 	boost::logic::tribool massive;
 
 	//normal constructor
-	BattleCast(const CBattleInfoCallback * cb, const Caster * caster_, const Mode mode_, const CSpell * spell_);
+	BattleCast(const CBattleInfoCallback * cb_, const Caster * caster_, const Mode mode_, const CSpell * spell_);
 
 	//magic mirror constructor
 	BattleCast(const BattleCast & orig, const Caster * caster_);
@@ -127,6 +129,7 @@ public:
 	Mode getMode() const override;
 	const Caster * getCaster() const override;
 	const CBattleInfoCallback * getBattle() const override;
+	const IGameInfoCallback * getGame() const override;
 
 	OptionalValue getSpellLevel() const override;
 
@@ -177,6 +180,7 @@ private:
 	Mode mode;
 	const CSpell * spell;
 	const CBattleInfoCallback * cb;
+	const IGameInfoCallback * gameCb;
 	const Caster * caster;
 };
 
@@ -208,7 +212,7 @@ public:
 	virtual std::vector<const CStack *> getAffectedStacks(const Target & target) const = 0;
 
 	virtual bool canBeCast(Problem & problem) const = 0;
-	virtual bool canBeCastAt(const Target & target) const = 0;
+	virtual bool canBeCastAt(Problem & problem, const Target & target) const = 0;
 
 	virtual void applyEffects(BattleStateProxy * battleState, vstd::RNG & rng, const Target & targets, bool indirect, bool ignoreImmunity) const = 0;
 
@@ -264,7 +268,9 @@ public:
 	virtual const scripting::Service * scriptingService() const = 0;
 	virtual const SpellService * spellService() const = 0;
 
-	const CBattleInfoCallback * cb;
+	virtual const IGameInfoCallback * game() const = 0;
+	virtual const CBattleInfoCallback * battle() const = 0;
+
 	const Caster * caster;
 
 	ui8 casterSide;
@@ -317,6 +323,10 @@ public:
 	const CreatureService * creatureService() const override;
 	const scripting::Service * scriptingService() const override;
 	const SpellService * spellService() const override;
+
+	const IGameInfoCallback * game() const override;
+	const CBattleInfoCallback * battle() const override;
+
 protected:
 	const CSpell * owner;
 	Mode mode;
@@ -335,6 +345,9 @@ private:
 
 	boost::logic::tribool smart;
 	boost::logic::tribool massive;
+
+	const IGameInfoCallback * gameCb;
+	const CBattleInfoCallback * cb;
 };
 
 class DLL_LINKAGE IReceptiveCheck

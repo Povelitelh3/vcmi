@@ -93,7 +93,9 @@ std::shared_ptr<scripting::Context> Custom::resolveScript(const Mechanics * m) c
 	if(!script)
 		return std::shared_ptr<scripting::Context>();
 
-	return script->createIsolatedContext();
+	std::shared_ptr<scripting::Context> context = script->createIsolatedContext();
+	context->init(m->game(), m->battle());
+	return context;
 }
 
 

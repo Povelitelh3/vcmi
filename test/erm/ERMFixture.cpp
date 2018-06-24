@@ -14,6 +14,17 @@
 namespace test
 {
 
+ERMFixture::BattleFake::BattleFake()
+	: CBattleInfoCallback(),
+	BattleStateMock()
+{
+}
+
+void ERMFixture::BattleFake::setUp()
+{
+	CBattleInfoCallback::setBattle(this);
+}
+
 
 ERMFixture::ERMFixture()
 {
@@ -24,7 +35,8 @@ ERMFixture::~ERMFixture() = default;
 
 void ERMFixture::setUp()
 {
-
+	battleFake = std::make_shared<BattleFake>();
+	battleFake->setUp();
 }
 
 
