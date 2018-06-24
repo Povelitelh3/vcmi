@@ -276,7 +276,7 @@ namespace ERMPrinter
 		{
 			CommandPrinterVisitor un;
 			boost::apply_visitor(un, cmd.cmd);
-			logGlobal->debug("Line comment: %s", cmd.comment);
+//			logGlobal->debug("Line comment: %s", cmd.comment);
 		}
 		void operator()(std::string const& comment) const
 		{
@@ -1432,7 +1432,7 @@ struct CommandExec : boost::static_visitor<>
 	void operator()(Tcommand const& cmd) const
 	{
 		boost::apply_visitor(ERMExpDispatch(interp), cmd.cmd);
-		logGlobal->debug("Line comment: %s", cmd.comment);
+//		logGlobal->debug("Line comment: %s", cmd.comment);
 	}
 	void operator()(std::string const& comment) const
 	{
@@ -2545,7 +2545,6 @@ struct _SbackquoteEval : boost::static_visitor<VOption>
 	}
 	VOption operator()(ERM::Tcommand const& opt) const
 	{
-		boost::apply_visitor(ERMExpDispatch(interp), opt.cmd);
 		return opt;
 	}
 	VOption operator()(VFunc const& opt) const
@@ -2781,6 +2780,9 @@ struct VEvaluator : boost::static_visitor<VOption>
 	}
 	VOption operator()(ERM::Tcommand const& opt) const
 	{
+		//this is how FP works, evaluation == producing side effects
+		boost::apply_visitor(ERMExpDispatch(interp), opt.cmd);
+		//TODO: can we evaluate to smth more useful?
 		return VNIL();
 	}
 	VOption operator()(VFunc const& opt) const

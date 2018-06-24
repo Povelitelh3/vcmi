@@ -209,7 +209,7 @@ namespace ERM
 		>
 		Tcmd;
 		Tcmd cmd;
-		std::string comment;
+		//std::string comment;
 	};
 
 	//vector expression

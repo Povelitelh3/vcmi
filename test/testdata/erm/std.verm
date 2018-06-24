@@ -12,18 +12,24 @@ VERM
 ; example 3 --- semantic macros
 ![defmacro do-n-times [times body]
 	`[progn
+		!!IF:M^Hello world from macro def^;
 		[setq do-counter 0]
 		[setq do-max ,times]
 		[do [< do-counter do-max]
-			[progn 
+			[progn
 				[setq do-counter [+ do-counter 1]]
 				,body
 			]
 		]
 	]
 ]
-![do-n-times 4 [print ^tekst\n^]]
 
+![do-n-times 4
+	[progn
+		!!IF:M^Hello world from macro usage^;
+		[print ^tekst\n^]
+	]
+]
 
 ; example 4 --- conditional expression
 ![if [> 2 1] [print ^Wieksze^] [print ^Mniejsze^]]
@@ -38,3 +44,15 @@ VERM
 	]
 ]
 ![print [factorial 8]]
+
+; example 7 - combined
+
+![defun HelloWorldERM []
+	[progn
+		!!IF:M^Hello world FN1^;
+		!!IF:M^Hello world FN2^;
+	]
+]
+
+![HelloWorldERM]
+![HelloWorldERM]

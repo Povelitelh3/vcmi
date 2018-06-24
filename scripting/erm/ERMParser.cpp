@@ -119,11 +119,16 @@ std::string CERMPreprocessor::retrieveCommandLine()
 				}
 				else if(c == '^')
 					openedString = true;
-				else if(c == ';') // a ';' that is in command line (and not in string) ends the command -> throw away rest
+				else if(c == ';' && !verm) //do not allow comments inside VExp for now
 				{
 					line.erase(i+!verm, line.length() - i - !verm); //leave ';' at the end only at ERM commands
 					break;
 				}
+//				else if(c == ';') // a ';' that is in command line (and not in string) ends the command -> throw away rest
+//				{
+//					line.erase(i+!verm, line.length() - i - !verm); //leave ';' at the end only at ERM commands
+//					break;
+//				}
 			}
 			else if(c == '^')
 				openedString = false;
@@ -145,7 +150,10 @@ std::string CERMPreprocessor::retrieveCommandLine()
 	}
 
 	if(openedBraces || openedString)
+	{
 		logGlobal->error("Ill-formed file: %s", fname);
+		throw ParseErrorException();
+	}
 	return "";
 }
 
@@ -182,6 +190,7 @@ std::vector<LineInfo> ERMParser::parseFile()
 	catch (ParseErrorException & e)
 	{
 		logGlobal->error("Stopped parsing file.");
+		throw;
 	}
 	return ret;
 }
@@ -305,10 +314,15 @@ BOOST_FUSION_ADAPT_STRUCT(
 	(boost::optional<ERM::Tcondition>, condition)
 	)
 
+//BOOST_FUSION_ADAPT_STRUCT(
+//	ERM::Tcommand,
+//	(ERM::Tcommand::Tcmd, cmd)
+//	(std::string, comment)
+//	)
+
 BOOST_FUSION_ADAPT_STRUCT(
 	ERM::Tcommand,
 	(ERM::Tcommand::Tcmd, cmd)
-	(std::string, comment)
 	)
 
 BOOST_FUSION_ADAPT_STRUCT(
@@ -372,7 +386,7 @@ namespace ERM
 						(qi::lit("!") >> receiver) |
 						(qi::lit("#") >> instruction) |
 						(qi::lit("$") >> postTrigger)
-					) >> comment
+					) //>> comment
 				);
 
 			rline %=

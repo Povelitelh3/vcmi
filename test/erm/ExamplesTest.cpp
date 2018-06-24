@@ -12,6 +12,7 @@
 #include "ERMFixture.h"
 #include "../../lib/VCMI_Lib.h"
 #include "../../lib/ScriptHandler.h"
+#include "../../lib/NetPacks.h"
 
 #include "../mock/mock_IGameEventRealizer.h"
 #include "../mock/mock_IGameInfoCallback.h"
@@ -30,6 +31,8 @@ public:
 	StrictMock<IGameInfoCallbackMock> infoMock;
 	StrictMock<IGameEventRealizerMock> applierMock;
 
+	std::vector<std::string> actualTexts;
+
 	ExamplesTest()
 		: ERMFixture()
 	{
@@ -38,7 +41,17 @@ public:
 	void setDefaultExpectaions()
 	{
 		EXPECT_CALL(infoMock, getLocalPlayer()).WillRepeatedly(Return(PlayerColor(3)));
-		EXPECT_CALL(applierMock, commitPackage(_)).Times(AnyNumber());
+		EXPECT_CALL(applierMock, commitPackage(_)).Times(AtLeast(1)).WillRepeatedly(Invoke(this, &onCommit));
+	}
+
+	void onCommit(CPackForClient * pack)
+	{
+		InfoWindow * iw = dynamic_cast<InfoWindow *>(pack);
+
+		if(iw)
+		{
+			actualTexts.push_back(iw->text.toString());
+		}
 	}
 
 protected:
@@ -48,7 +61,7 @@ protected:
 	}
 };
 
-TEST_F(ExamplesTest, First)
+TEST_F(ExamplesTest, HelloWorld)
 {
 	setDefaultExpectaions();
 
@@ -66,7 +79,7 @@ TEST_F(ExamplesTest, First)
 	ctx->init(&infoMock);
 }
 
-TEST_F(ExamplesTest, Second)
+TEST_F(ExamplesTest, HelloWorldVERM)
 {
 	setDefaultExpectaions();
 
@@ -82,6 +95,21 @@ TEST_F(ExamplesTest, Second)
 	std::shared_ptr<Context> ctx = subject->createIsolatedContext();
 	ctx->giveActionCB(&applierMock);
 	ctx->init(&infoMock);
+
+	std::vector<std::string> expectedTexts =
+	{
+		"Hello world from macro def",
+		"Hello world from macro usage",
+		"Hello world from macro usage",
+		"Hello world from macro usage",
+		"Hello world from macro usage",
+		"Hello world FN1",
+		"Hello world FN2",
+		"Hello world FN1",
+		"Hello world FN2"
+	};
+
+	EXPECT_THAT(actualTexts, ContainerEq(expectedTexts));
 }
 
 }
