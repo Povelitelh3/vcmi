@@ -3246,30 +3246,39 @@ namespace VERMInterpreter
 		delete nen;
 	}
 
-//	bool operator<=(const TLiteral & t1, const TLiteral & t2)
-//	{
-//		if(t1.type() == t2.type())
-//		{
-//			return boost::apply_visitor(_opLEvis(t1), t2);
-//		}
-//		throw EVermScriptExecError("These types are incomparable!");
-//	}
-//	bool operator>(const TLiteral & t1, const TLiteral & t2)
-//	{
-//		if(t1.type() == t2.type())
-//		{
-//			return boost::apply_visitor(_opGTvis(t1), t2);
-//		}
-//		throw EVermScriptExecError("These types are incomparable!");
-//	}
-//	bool operator>=(const TLiteral & t1, const TLiteral & t2)
-//	{
-//		if(t1.type() == t2.type())
-//		{
-//			return boost::apply_visitor(_opGEvis(t1), t2);
-//		}
-//		throw EVermScriptExecError("These types are incomparable!");
-//	}
+ 	bool operator<(const TLiteral & t1, const TLiteral & t2)
+ 	{
+ 		if(t1.type() == t2.type())
+ 		{
+ 			return boost::apply_visitor(_opLTvis(t1), t2);
+ 		}
+ 		throw EVermScriptExecError("These types are incomparable!");
+ 	}
+
+	bool operator<=(const TLiteral & t1, const TLiteral & t2)
+	{
+		if(t1.type() == t2.type())
+		{
+			return boost::apply_visitor(_opLEvis(t1), t2);
+		}
+		throw EVermScriptExecError("These types are incomparable!");
+	}
+	bool operator>(const TLiteral & t1, const TLiteral & t2)
+	{
+		if(t1.type() == t2.type())
+		{
+			return boost::apply_visitor(_opGTvis(t1), t2);
+		}
+		throw EVermScriptExecError("These types are incomparable!");
+	}
+	bool operator>=(const TLiteral & t1, const TLiteral & t2)
+	{
+		if(t1.type() == t2.type())
+		{
+			return boost::apply_visitor(_opGEvis(t1), t2);
+		}
+		throw EVermScriptExecError("These types are incomparable!");
+	}
 
 	struct _VLITPrinter : boost::static_visitor<void>
 	{

@@ -304,78 +304,70 @@ namespace VERMInterpreter
 
 	typedef boost::variant<char, double, int, std::string> TLiteral;
 
-//	//for operator <
-//	struct _opLTvis : boost::static_visitor<bool>
-//	{
-//		const TLiteral & lhs;
-//		_opLTvis(const TLiteral & _lhs) : lhs(_lhs)
-//		{}
-//
-//		template<typename OP>
-//		bool operator()(OP const & rhs) const
-//		{
-//			return boost::get<OP>(lhs) < rhs;
-//		}
-//	};
-//
-// 	bool operator<(const TLiteral & t1, const TLiteral & t2)
-// 	{
-// 		if(t1.type() == t2.type())
-// 		{
-// 			return boost::apply_visitor(_opLTvis(t1), t2);
-// 		}
-// 		throw EVermScriptExecError("These types are incomparable!");
-// 	}
-//
-//
-//	//for operator <=
-//	struct _opLEvis : boost::static_visitor<bool>
-//	{
-//		const TLiteral & lhs;
-//		_opLEvis(const TLiteral & _lhs) : lhs(_lhs)
-//		{}
-//
-//		template<typename OP>
-//		bool operator()(OP const & rhs) const
-//		{
-//			return boost::get<OP>(lhs) <= rhs;
-//		}
-//	};
-//
-//	bool operator<=(const TLiteral & t1, const TLiteral & t2);
-//
-//	//operator >
-//	struct _opGTvis : boost::static_visitor<bool>
-//	{
-//		const TLiteral & lhs;
-//		_opGTvis(const TLiteral & _lhs) : lhs(_lhs)
-//		{}
-//
-//		template<typename OP>
-//		bool operator()(OP const & rhs) const
-//		{
-//			return boost::get<OP>(lhs) > rhs;
-//		}
-//	};
-//
-//	bool operator>(const TLiteral & t1, const TLiteral & t2);
-//
-//	//operator >=
-//
-//	struct _opGEvis : boost::static_visitor<bool>
-//	{
-//		const TLiteral & lhs;
-//		_opGEvis(const TLiteral & _lhs) : lhs(_lhs)
-//		{}
-//
-//		template<typename OP>
-//		bool operator()(OP const & rhs) const
-//		{
-//			return boost::get<OP>(lhs) >= rhs;
-//		}
-//	};
-//
-//	bool operator>=(const TLiteral & t1, const TLiteral & t2);
+	//for operator <
+	struct _opLTvis : boost::static_visitor<bool>
+	{
+		const TLiteral & lhs;
+		_opLTvis(const TLiteral & _lhs) : lhs(_lhs)
+		{}
+
+		template<typename OP>
+		bool operator()(OP const & rhs) const
+		{
+			return boost::get<OP>(lhs) < rhs;
+		}
+	};
+
+ 	bool operator<(const TLiteral & t1, const TLiteral & t2);
+
+	//for operator <=
+	struct _opLEvis : boost::static_visitor<bool>
+	{
+		const TLiteral & lhs;
+		_opLEvis(const TLiteral & _lhs) : lhs(_lhs)
+		{}
+
+		template<typename OP>
+		bool operator()(OP const & rhs) const
+		{
+			return boost::get<OP>(lhs) <= rhs;
+		}
+	};
+
+	bool operator<=(const TLiteral & t1, const TLiteral & t2);
+
+	//operator >
+	struct _opGTvis : boost::static_visitor<bool>
+	{
+		const TLiteral & lhs;
+		_opGTvis(const TLiteral & _lhs) : lhs(_lhs)
+		{}
+
+		template<typename OP>
+		bool operator()(OP const & rhs) const
+		{
+			return boost::get<OP>(lhs) > rhs;
+		}
+	};
+
+	bool operator>(const TLiteral & t1, const TLiteral & t2);
+
+	//operator >=
+
+	struct _opGEvis : boost::static_visitor<bool>
+	{
+		const TLiteral & lhs;
+		_opGEvis(const TLiteral & _lhs) : lhs(_lhs)
+		{}
+
+		template<typename OP>
+		bool operator()(OP const & rhs) const
+		{
+			return boost::get<OP>(lhs) >= rhs;
+		}
+	};
+
+	bool operator>=(const TLiteral & t1, const TLiteral & t2);
 
 	//operator =
 	struct _opEQvis : boost::static_visitor<bool>
