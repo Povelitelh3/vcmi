@@ -15,9 +15,14 @@
 #include "../../../lib/HeroBonus.h"
 #include "../../../lib/ScriptingService.h"
 #include "../../../lib/NetPacksBase.h"
-
-#include "../mock/mock_battle_IBattleState.h"
 #include "../../../lib/battle/CBattleInfoCallback.h"
+
+#include "../mock/mock_IGameEventRealizer.h"
+#include "../mock/mock_IGameInfoCallback.h"
+#include "../mock/mock_battle_IBattleState.h"
+
+#include "../JsonComparer.h"
+
 
 namespace test
 {
@@ -37,6 +42,9 @@ public:
 	};
 
 	std::shared_ptr<BattleFake> battleFake;
+
+	StrictMock<IGameInfoCallbackMock> infoMock;
+	StrictMock<IGameEventRealizerMock> applierMock;
 
 	ERMFixture();
 	virtual ~ERMFixture();

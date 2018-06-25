@@ -1,0 +1,10 @@
+VERM
+
+; make effect work if hero has expert level in spell school
+
+!?PI;
+
+![defun applicable []
+	1
+]
+

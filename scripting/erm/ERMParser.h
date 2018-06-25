@@ -34,6 +34,9 @@ public:
 //various classes that represent ERM/VERM AST
 namespace ERM
 {
+	using ValType = int; //todo: set to int64_t
+	using IType = int; //todo: set to int32_t
+
 	struct TStringConstant
 	{
 		std::string str;

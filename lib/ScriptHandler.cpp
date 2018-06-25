@@ -85,8 +85,6 @@ const Script * ScriptHandler::resolveScript(const std::string & name) const
 	{
 		return iter->second;
 	}
-
-
 }
 
 std::vector<bool> ScriptHandler::getDefaultAllowed() const

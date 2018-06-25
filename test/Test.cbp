@@ -13,6 +13,7 @@
 				<Option object_output="obj/Debug/x86/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters=" --gtest_filter=*API*" />
 				<Compiler>
 					<Add option="-Og" />
 					<Add option="-Wextra" />
@@ -90,6 +91,7 @@
 		<Unit filename="erm/ERMFixture.cpp" />
 		<Unit filename="erm/ERMFixture.h" />
 		<Unit filename="erm/ExamplesTest.cpp" />
+		<Unit filename="erm/SpellEffectAPITest.cpp" />
 		<Unit filename="game/CGameStateTest.cpp" />
 		<Unit filename="googletest/googlemock/src/gmock-all.cc" />
 		<Unit filename="googletest/googletest/src/gtest-all.cc" />
@@ -149,6 +151,7 @@
 		<Unit filename="spells/targetConditions/SpellEffectConditionTest.cpp" />
 		<Unit filename="spells/targetConditions/TargetConditionItemFixture.cpp" />
 		<Unit filename="spells/targetConditions/TargetConditionItemFixture.h" />
+		<Unit filename="testdata/erm/SpellEffectAPITest.verm" />
 		<Unit filename="testdata/erm/std.verm" />
 		<Unit filename="testdata/erm/testy.erm" />
 		<Unit filename="testdata/rmg/1.json" />

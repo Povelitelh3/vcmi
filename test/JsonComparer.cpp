@@ -121,7 +121,8 @@ void JsonComparer::checkEqualJson(const JsonNode & actual, const JsonNode & expe
 
 	const bool validType = actual.getType() == expected.getType();
 
-	check(validType, "type mismatch");
+	check(validType, "type mismatch. \n"+actual.toJson(true));
+
 
 	//do detail checks avoiding assertions in JsonNode
 	if(validType)

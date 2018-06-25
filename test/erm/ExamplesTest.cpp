@@ -14,8 +14,7 @@
 #include "../../lib/ScriptHandler.h"
 #include "../../lib/NetPacks.h"
 
-#include "../mock/mock_IGameEventRealizer.h"
-#include "../mock/mock_IGameInfoCallback.h"
+
 
 ///All unsorted ERM acceptance tests goes here
 
@@ -28,9 +27,6 @@ using namespace ::scripting;
 class ExamplesTest : public Test, public ERMFixture
 {
 public:
-	StrictMock<IGameInfoCallbackMock> infoMock;
-	StrictMock<IGameEventRealizerMock> applierMock;
-
 	std::vector<std::string> actualTexts;
 
 	ExamplesTest()

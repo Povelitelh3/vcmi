@@ -364,22 +364,6 @@ namespace ERMPrinter
 	}
 }
 
-void ERMInterpreter::printScripts(EPrintMode mode)
-{
-	std::map< LinePointer, ERM::TLine >::const_iterator prevIt;
-	for(std::map< LinePointer, ERM::TLine >::const_iterator it = scripts.begin(); it != scripts.end(); ++it)
-	{
-		if(it == scripts.begin() || it->first.file != prevIt->first.file)
-		{
-			logGlobal->debug("----------------- script %s ------------------", it->first.file->filename);
-		}
-
-		logGlobal->debug("%d", it->first.realLineNum);
-		ERMPrinter::printAST(it->second);
-		prevIt = it;
-	}
-}
-
 struct ScriptScanner : boost::static_visitor<>
 {
 	ERMInterpreter * interpreter;
@@ -421,6 +405,22 @@ struct ScriptScanner : boost::static_visitor<>
 
 	}
 };
+
+void ERMInterpreter::printScripts(EPrintMode mode)
+{
+	std::map< LinePointer, ERM::TLine >::const_iterator prevIt;
+	for(std::map< LinePointer, ERM::TLine >::const_iterator it = scripts.begin(); it != scripts.end(); ++it)
+	{
+		if(it == scripts.begin() || it->first.file != prevIt->first.file)
+		{
+			logGlobal->debug("----------------- script %s ------------------", it->first.file->filename);
+		}
+
+		logGlobal->debug("%d", it->first.realLineNum);
+		ERMPrinter::printAST(it->second);
+		prevIt = it;
+	}
+}
 
 void ERMInterpreter::scanScripts()
 {
@@ -2396,19 +2396,89 @@ void ERMInterpreter::loadScript(const std::string & name, const std::string & so
 	}
 }
 
+class TLiteralToJson : public boost::static_visitor<JsonNode>
+{
+public:
+	JsonNode operator()(char const & val) const
+	{
+		std::string tmp;
+		tmp.assign(1, val);
+		return JsonUtils::stringNode(tmp);
+	}
+
+	JsonNode operator()(double const & val) const
+	{
+		return JsonUtils::floatNode(val);
+	}
+
+	JsonNode operator()(ERM::ValType const & val) const
+	{
+		return JsonUtils::intNode(val);
+	}
+
+	JsonNode operator()(std::string const & val) const
+	{
+		return JsonUtils::stringNode(val);
+	}
+};
+
+class VOptionToJson : public boost::static_visitor<JsonNode>
+{
+public:
+	JsonNode operator()(VNIL const & opt) const
+	{
+		return JsonNode();
+	}
+	JsonNode operator()(VNode const & opt) const
+	{
+		return JsonNode();
+	}
+	JsonNode operator()(VSymbol const & opt) const
+	{
+		return JsonNode();
+	}
+	JsonNode operator()(TLiteral const & opt) const
+	{
+		return boost::apply_visitor(TLiteralToJson(), opt);
+	}
+	JsonNode operator()(ERM::Tcommand const & opt) const
+	{
+		return JsonNode();
+	}
+	JsonNode operator()(VFunc const & opt) const
+	{
+		return JsonNode();
+	}
+};
+
 
 JsonNode ERMInterpreter::apiQuery(const std::string & name, const JsonNode & parameters)
 {
-	//TODO: ERMInterpreter::apiQuery
-
 	try
 	{
-		return JsonNode();
+		if(!globalEnv->isBound(name, Environment::ANYWHERE))
+			throw EVermScriptExecError("Symbol not found: "+name);
+
+		VOption & apiMethod = globalEnv->retrieveValue(name);
+
+		if(!isA<VFunc>(apiMethod))
+			throw EVermScriptExecError("API method must be implemented in a function");
+
+		VFunc f = getAs<VFunc>(apiMethod);
+
+		if(f.macro)
+			throw EVermScriptExecError("API method can not be macro");
+
+		VOptionList vparams;
+
+		VOption vret = f(this, VermTreeIterator(vparams));
+
+		return boost::apply_visitor(VOptionToJson(), vret);
 	}
 	catch(VERMInterpreter::EInterpreterProblem & ex)
 	{
 		logMod->error(ex.what());
-		return JsonNode();
+		return JsonUtils::stringNode(ex.what());
 	}
 }
 
@@ -2653,7 +2723,7 @@ struct VNodeEvaluator : boost::static_visitor<VOption>
 			env.bindAtFirstHit( getAs<VSymbol>(exp.children[1]).text, interp->eval(exp.children[2]));
 			return getAs<VSymbol>(exp.children[1]);
 		}
-		else if(opt.text == "defun")
+		else if(opt.text == ERMInterpreter::defunSymbol)
 		{
 			if(exp.children.size() < 4)
 			{
