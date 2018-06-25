@@ -26,6 +26,7 @@ class CustomTest : public Test, public EffectFixture
 {
 public:
 	const std::string SCRIPT_NAME = "testScript";
+	const int32_t EFFECT_LEVEL = 1;
 
 	ServiceMock serviceMock;
 	ScriptMock scriptMock;
@@ -47,18 +48,20 @@ protected:
 TEST_F(CustomTest, ApplicableRedirected)
 {
 	EXPECT_CALL(mechanicsMock, scriptingService()).WillRepeatedly(Return(&serviceMock));
+	EXPECT_CALL(mechanicsMock, getEffectLevel()).WillRepeatedly(Return(EFFECT_LEVEL));
 
 	EXPECT_CALL(serviceMock, resolveScript(Eq(SCRIPT_NAME))).WillOnce(Return(&scriptMock));
 	//TODO: we should cache even isolated context in client|server objects
 	EXPECT_CALL(scriptMock, createIsolatedContext()).WillOnce(Return(contextMock));
 
 	EXPECT_CALL(*contextMock, init(_,_)).Times(1);
+	EXPECT_CALL(*contextMock, setGlobal(Eq("effect-level"),Matcher<int>(Eq(EFFECT_LEVEL))));
 
 	JsonNode response(JsonNode::JsonType::DATA_VECTOR);
 	response.Vector().push_back(JsonUtils::intNode(1));
 
 
-	EXPECT_CALL(*contextMock, apiQuery(Eq("applicable"),_)).WillOnce(Return(response));//TODO: check call parameter
+	EXPECT_CALL(*contextMock, callGlobal(Eq("applicable"),_)).WillOnce(Return(response));//TODO: check call parameter
 	//expect query 'applicable' from script
 
 	JsonNode options(JsonNode::JsonType::DATA_STRUCT);

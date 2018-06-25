@@ -474,6 +474,18 @@ namespace VERMInterpreter
 		///returns true if symbol was really unbound
 		bool unbind(const std::string & name, EUnbindMode mode);
 
+		template <typename T>
+		void localBindLiteral(const std::string & name, const T & value)
+		{
+			TLiteral val;
+			val = value;
+
+			VOption sym;
+			sym = val;
+
+			localBind(name, sym);
+		}
+
 		void localBind(std::string name, const VOption & sym);
 		void bindAtFirstHit(std::string name, const VOption & sym); //if symbol is locally defines, it gets overwritten; otherwise it is bind globally
 	};
@@ -839,7 +851,11 @@ public:
 
 	void loadScript(const std::string & name, const std::string & source);
 
-	JsonNode apiQuery(const std::string & name, const JsonNode & parameters) override;
+	JsonNode callGlobal(const std::string & name, const JsonNode & parameters) override;
+
+	void setGlobal(const std::string & name, int value) override;
+	void setGlobal(const std::string & name, const std::string & value) override;
+	void setGlobal(const std::string & name, double value) override;
 
 	void init(const IGameInfoCallback * cb, const CBattleInfoCallback * battleCb) override;//sets up environment etc.
 //	virtual void executeUserCommand(const std::string &cmd) override;

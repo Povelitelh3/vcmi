@@ -2431,7 +2431,12 @@ public:
 	}
 	JsonNode operator()(VNode const & opt) const
 	{
-		return JsonNode();
+		JsonNode ret(JsonNode::JsonType::DATA_VECTOR);
+
+		for(auto & item : opt.children)
+			ret.Vector().push_back(boost::apply_visitor(VOptionToJson(), item));
+
+		return ret;
 	}
 	JsonNode operator()(VSymbol const & opt) const
 	{
@@ -2451,8 +2456,7 @@ public:
 	}
 };
 
-
-JsonNode ERMInterpreter::apiQuery(const std::string & name, const JsonNode & parameters)
+JsonNode ERMInterpreter::callGlobal(const std::string & name, const JsonNode & parameters)
 {
 	try
 	{
@@ -2480,6 +2484,21 @@ JsonNode ERMInterpreter::apiQuery(const std::string & name, const JsonNode & par
 		logMod->error(ex.what());
 		return JsonUtils::stringNode(ex.what());
 	}
+}
+
+void ERMInterpreter::setGlobal(const std::string & name, int value)
+{
+	globalEnv->localBindLiteral(name, value);
+}
+
+void ERMInterpreter::setGlobal(const std::string & name, const std::string & value)
+{
+	globalEnv->localBindLiteral(name, value);
+}
+
+void ERMInterpreter::setGlobal(const std::string & name, double value)
+{
+	globalEnv->localBindLiteral(name, value);
 }
 
 void ERMInterpreter::init(const IGameInfoCallback * cb, const CBattleInfoCallback * battleCb)

@@ -50,7 +50,9 @@ bool Custom::applicable(Problem & problem, const Mechanics * m) const
 	if(!context)
 		return false;
 
-	JsonNode response = context->apiQuery(EVENT_APPLICABLE_GENERAL, JsonNode());
+	setContextVariables(m, context);
+
+	JsonNode response = context->callGlobal(EVENT_APPLICABLE_GENERAL, JsonNode());
 
 	if(response.Vector().size() != 1)
 	{
@@ -96,6 +98,11 @@ std::shared_ptr<scripting::Context> Custom::resolveScript(const Mechanics * m) c
 	std::shared_ptr<scripting::Context> context = script->createIsolatedContext();
 	context->init(m->game(), m->battle());
 	return context;
+}
+
+void Custom::setContextVariables(const Mechanics * m, std::shared_ptr<scripting::Context> context) const
+{
+	context->setGlobal("effect-level", m->getEffectLevel());
 }
 
 

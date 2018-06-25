@@ -49,6 +49,8 @@ private:
 	std::string scriptName;
 
 	std::shared_ptr<scripting::Context> resolveScript(const Mechanics * m) const;
+
+	void setContextVariables(const Mechanics * m, std::shared_ptr<scripting::Context> context) const;
 };
 
 } // namespace effects

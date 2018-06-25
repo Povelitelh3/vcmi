@@ -5,6 +5,8 @@ VERM
 !?PI;
 
 ![defun applicable []
-	1
+	[if [>= effect-level 3]
+		`[1]
+		`[0]
+	]
 ]
-

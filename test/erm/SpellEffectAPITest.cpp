@@ -11,8 +11,6 @@
 
 #include "ERMFixture.h"
 
-#include "../../lib/ScriptHandler.h"
-
 namespace test
 {
 
@@ -31,32 +29,43 @@ protected:
 	}
 };
 
-TEST_F(SpellEffectAPITest, Applicable)
+TEST_F(SpellEffectAPITest, ApplicableOnExpert)
 {
 	JsonNode scriptConfig(JsonNode::JsonType::DATA_STRUCT);
 
 	scriptConfig["source"].String() = "test/erm/SpellEffectAPITest.verm";
-//
-//	{
-//		JsonNode & bindingsJson = scriptConfig["bindings"];
-//		JsonNode & bindingJson = bindingsJson["applicable"];
-//
-//	}
 
-	std::shared_ptr<ScriptImpl> subject;
+	loadScript(scriptConfig);
 
-	subject.reset(VLC->scriptHandler->loadFromJson(scriptConfig));
-
-	std::shared_ptr<Context> context = subject->createIsolatedContext();
-
-	context->init(&infoMock, battleFake.get());
+	context->setGlobal("effect-level", 3);
 
 	JsonNode params;
 
-	JsonNode ret = context->apiQuery("applicable", params);
+	JsonNode ret = context->callGlobal("applicable", params);
 
 	JsonNode expected;
-	expected.Integer() = 1;
+	expected.Vector().push_back(JsonUtils::intNode(1));
+
+	JsonComparer cmp(false);
+	cmp.compare("applicable result", ret, expected);
+
+}
+
+TEST_F(SpellEffectAPITest, NotApplicableOnAdvanced)
+{
+	JsonNode scriptConfig(JsonNode::JsonType::DATA_STRUCT);
+
+	scriptConfig["source"].String() = "test/erm/SpellEffectAPITest.verm";
+	loadScript(scriptConfig);
+
+	context->setGlobal("effect-level", 2);
+
+	JsonNode params;
+
+	JsonNode ret = context->callGlobal("applicable", params);
+
+	JsonNode expected;
+	expected.Vector().push_back(JsonUtils::intNode(0));
 
 	JsonComparer cmp(false);
 	cmp.compare("applicable result", ret, expected);

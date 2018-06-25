@@ -11,11 +11,11 @@
 #pragma once
 
 #include <vstd/RNG.h>
-#include "../../../lib/JsonNode.h"
-#include "../../../lib/HeroBonus.h"
-#include "../../../lib/ScriptingService.h"
-#include "../../../lib/NetPacksBase.h"
-#include "../../../lib/battle/CBattleInfoCallback.h"
+#include "../../lib/JsonNode.h"
+#include "../../lib/HeroBonus.h"
+#include "../../lib/ScriptHandler.h"
+#include "../../lib/NetPacksBase.h"
+#include "../../lib/battle/CBattleInfoCallback.h"
 
 #include "../mock/mock_IGameEventRealizer.h"
 #include "../mock/mock_IGameInfoCallback.h"
@@ -41,6 +41,9 @@ public:
 		void setUp();
 	};
 
+	std::shared_ptr<ScriptImpl> subject;
+	std::shared_ptr<Context> context;
+
 	std::shared_ptr<BattleFake> battleFake;
 
 	StrictMock<IGameInfoCallbackMock> infoMock;
@@ -49,6 +52,7 @@ public:
 	ERMFixture();
 	virtual ~ERMFixture();
 
+	void loadScript(const JsonNode & scriptConfig);
 protected:
 	void setUp();
 

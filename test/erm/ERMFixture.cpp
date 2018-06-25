@@ -33,6 +33,16 @@ ERMFixture::ERMFixture()
 
 ERMFixture::~ERMFixture() = default;
 
+void ERMFixture::loadScript(const JsonNode & scriptConfig)
+{
+	subject.reset(VLC->scriptHandler->loadFromJson(scriptConfig));
+
+	context = subject->createIsolatedContext();
+
+	context->init(&infoMock, battleFake.get());
+}
+
+
 void ERMFixture::setUp()
 {
 	battleFake = std::make_shared<BattleFake>();
