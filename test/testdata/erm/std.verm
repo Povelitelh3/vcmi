@@ -1,5 +1,4 @@
 VERM
-; standard verm file, global engine things should be put here
 
 !?PI;
 ; example 1 --- Hello World
@@ -44,15 +43,3 @@ VERM
 	]
 ]
 ![print [factorial 8]]
-
-; example 7 - combined
-
-![defun HelloWorldERM []
-	[progn
-		!!IF:M^Hello world FN1^;
-		!!IF:M^Hello world FN2^;
-	]
-]
-
-![HelloWorldERM]
-![HelloWorldERM]

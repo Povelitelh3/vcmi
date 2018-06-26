@@ -418,8 +418,7 @@ void CBattleAI::attemptCastingSpell()
 		HypotheticBattle state(cb);
 
 		spells::BattleCast cast(&state, hero, spells::Mode::HERO, ps->spell);
-		cast.target = ps->dest;
-		cast.cast(&state, rngStub);
+		cast.cast(&state, rngStub, ps->dest);
 		ValueMap newHealthOfStack;
 		ValueMap newValueOfStack;
 

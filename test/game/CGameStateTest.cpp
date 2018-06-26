@@ -236,7 +236,6 @@ TEST_F(CGameStateTest, issue2765)
 
 		//here tested ballista, but this applied to all war machines
 		spells::BattleCast cast(gameState->curB, &caster, spells::Mode::PASSIVE, age);
-		cast.aimToUnit(def);
 
 		spells::Target target;
 		target.emplace_back(def);
@@ -245,7 +244,7 @@ TEST_F(CGameStateTest, issue2765)
 
 		EXPECT_FALSE(m->canBeCastAt(problemMock, target));
 
-		EXPECT_TRUE(cast.castIfPossible(this));//should be possible, but with no effect (change to aimed cast check?)
+		EXPECT_TRUE(cast.castIfPossible(this, target));//should be possible, but with no effect (change to aimed cast check?)
 
 		EXPECT_TRUE(def->activeSpells().empty());
 	}
@@ -335,7 +334,6 @@ TEST_F(CGameStateTest, battleResurrection)
 		ASSERT_NE(spell, nullptr);
 
 		spells::BattleCast cast(gameState->curB, attacker, spells::Mode::HERO, spell);
-		cast.aimToUnit(unit);
 
 		spells::Target target;
 		target.emplace_back(unit);
@@ -346,7 +344,7 @@ TEST_F(CGameStateTest, battleResurrection)
 
 		EXPECT_TRUE(m->canBeCastAt(problemMock, target));
 
-		cast.cast(this);
+		cast.cast(this, target);
 //
 //		std::vector<std::string> expLog;
 //

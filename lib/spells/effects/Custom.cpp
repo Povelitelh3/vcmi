@@ -17,8 +17,8 @@
 
 static const std::string EFFECT_NAME = "core:custom";
 
-static const std::string EVENT_APPLICABLE_GENERAL = "applicable";
-static const std::string EVENT_APPLICABLE_TARGET = "applicableTarget";
+static const std::string APPLICABLE_GENERAL = "applicable";
+static const std::string APPLICABLE_TARGET = "applicableTarget";
 
 namespace spells
 {
@@ -52,15 +52,15 @@ bool Custom::applicable(Problem & problem, const Mechanics * m) const
 
 	setContextVariables(m, context);
 
-	JsonNode response = context->callGlobal(EVENT_APPLICABLE_GENERAL, JsonNode());
+	JsonNode response = context->callGlobal(APPLICABLE_GENERAL, JsonNode());
 
-	if(response.Vector().size() != 1)
+	if(response.getType() != JsonNode::JsonType::DATA_INTEGER)
 	{
 		logMod->error("Invalid API response from script %s.", scriptName);
 		logMod->debug(response.toJson(true));
 		return false;
 	}
-	return response.Vector().at(0).Integer() == 1;
+	return response.Integer() == 1;
 }
 
 bool Custom::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
@@ -103,6 +103,10 @@ std::shared_ptr<scripting::Context> Custom::resolveScript(const Mechanics * m) c
 void Custom::setContextVariables(const Mechanics * m, std::shared_ptr<scripting::Context> context) const
 {
 	context->setGlobal("effect-level", m->getEffectLevel());
+	context->setGlobal("effect-range-level", m->getRangeLevel());
+	context->setGlobal("effect-power", m->getEffectPower());
+	context->setGlobal("effect-duration", m->getEffectDuration());
+	context->setGlobal("effect-value", static_cast<int32_t>(m->getEffectValue()));
 }
 
 

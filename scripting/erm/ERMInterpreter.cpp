@@ -2262,7 +2262,7 @@ void VERMInterpreter::FunctionLocalVars::reset()
 
 void IexpValStr::setTo( const IexpValStr & second )
 {
-	logGlobal->trace("setting %s to %s", getName(), second.getName());
+//	logGlobal->trace("setting %s to %s", getName(), second.getName());
 	switch(type)
 	{
 	case IexpValStr::FLOATVAR:
@@ -2284,7 +2284,7 @@ void IexpValStr::setTo( const IexpValStr & second )
 
 void IexpValStr::setTo( int val )
 {
-	logGlobal->trace("setting %s to %d", getName(), val);
+//	logGlobal->trace("setting %s to %d", getName(), val);
 	switch(type)
 	{
 	case INTVAR:
@@ -2298,7 +2298,7 @@ void IexpValStr::setTo( int val )
 
 void IexpValStr::setTo( double val )
 {
-	logGlobal->trace("setting %s to %f", getName(), val);
+//	logGlobal->trace("setting %s to %f", getName(), val);
 	switch(type)
 	{
 	case FLOATVAR:
@@ -2312,7 +2312,7 @@ void IexpValStr::setTo( double val )
 
 void IexpValStr::setTo( const std::string & val )
 {
-	logGlobal->trace("setting %s to %s", getName(), val);
+//	logGlobal->trace("setting %s to %s", getName(), val);
 	switch(type)
 	{
 	case STRINGVAR:
@@ -2456,12 +2456,95 @@ public:
 	}
 };
 
+class JsonToVOption
+{
+public:
+	bool outer;
+	JsonToVOption(bool outer_)
+	:outer(outer_)
+	{}
+
+
+	VOption convert(const JsonNode & source)
+	{
+		switch(source.getType())
+		{
+		case JsonNode::JsonType::DATA_INTEGER:
+			{
+				TLiteral vval = static_cast<int>(source.Integer());
+
+				if(outer)
+				{
+					VOptionList box;
+					box.push_back(VSymbol("backquote"));
+					box.push_back(vval);
+					return VOption(VNode(box));
+				}
+				else
+				{
+					return VOption(vval);
+				}
+			}
+			break;
+		case JsonNode::JsonType::DATA_STRING:
+			{
+				TLiteral vval = source.String();
+				if(outer)
+				{
+					VOptionList box;
+					box.push_back(VSymbol("backquote"));
+					box.push_back(vval);
+					return VOption(VNode(box));
+				}
+				else
+				{
+					return VOption(vval);
+				}
+			}
+			break;
+		case JsonNode::JsonType::DATA_VECTOR:
+			{
+				if(outer)
+				{
+					VOptionList box;
+					box.emplace_back(VSymbol("backquote"));
+
+					VOptionList vval;
+
+					for(const JsonNode & elem : source.Vector())
+					{
+						vval.push_back(JsonToVOption(false).convert(elem));
+					}
+
+					box.emplace_back(VNode(vval));
+
+					return VOption(VNode(box));
+				}
+				else
+				{
+					VOptionList vval;
+
+					for(const JsonNode & elem : source.Vector())
+					{
+						vval.push_back(JsonToVOption(false).convert(elem));
+					}
+					return VOption(VNode(vval));
+				}
+			}
+			break;
+		default:
+			return VNIL();
+			break;
+		}
+	}
+};
+
 JsonNode ERMInterpreter::callGlobal(const std::string & name, const JsonNode & parameters)
 {
 	try
 	{
 		if(!globalEnv->isBound(name, Environment::ANYWHERE))
-			throw EVermScriptExecError("Symbol not found: "+name);
+			throw ESymbolNotFound(name);
 
 		VOption & apiMethod = globalEnv->retrieveValue(name);
 
@@ -2474,6 +2557,16 @@ JsonNode ERMInterpreter::callGlobal(const std::string & name, const JsonNode & p
 			throw EVermScriptExecError("API method can not be macro");
 
 		VOptionList vparams;
+
+		if(parameters.getType() == JsonNode::JsonType::DATA_VECTOR)
+		{
+			for(const JsonNode & elem : parameters.Vector())
+			{
+				VOption opt = JsonToVOption(true).convert(elem);
+
+				vparams.push_back(opt);
+			}
+		}
 
 		VOption vret = f(this, VermTreeIterator(vparams));
 
@@ -2643,6 +2736,90 @@ struct _SbackquoteEval : boost::static_visitor<VOption>
 	}
 };
 
+class CarEval : public boost::static_visitor<VOption>
+{
+	ERMInterpreter * interp;
+public:
+	CarEval(ERMInterpreter * interp_)
+		: interp(interp_)
+	{}
+
+	VOption operator()(VNIL const& opt) const
+	{
+		return opt;
+	}
+	VOption operator()(VNode const& opt) const
+	{
+		if(opt.children.size() == 0)
+		{
+			return VNIL();
+		}
+		else
+		{
+			return opt.children[0];
+		}
+	}
+	VOption operator()(VSymbol const& opt) const
+	{
+		return opt; //???
+	}
+	VOption operator()(TLiteral const& opt) const
+	{
+		return opt; //???
+	}
+	VOption operator()(ERM::Tcommand const& opt) const
+	{
+		return opt; //???
+	}
+	VOption operator()(VFunc const& opt) const
+	{
+		return opt; //???
+	}
+};
+
+class CdrEval : public boost::static_visitor<VOption>
+{
+	ERMInterpreter * interp;
+public:
+	CdrEval(ERMInterpreter * interp_)
+		: interp(interp_)
+	{}
+
+	VOption operator()(VNIL const& opt) const
+	{
+		return opt;
+	}
+	VOption operator()(VNode const& opt) const
+	{
+		if(opt.children.size() < 2)
+		{
+			return VNIL();
+		}
+		else
+		{
+			VNode ret(opt.children);
+			ret.children.erase(ret.children.begin());
+			return ret;
+		}
+	}
+	VOption operator()(VSymbol const& opt) const
+	{
+		return VNIL();
+	}
+	VOption operator()(TLiteral const& opt) const
+	{
+		return VNIL();
+	}
+	VOption operator()(ERM::Tcommand const& opt) const
+	{
+		return VNIL();
+	}
+	VOption operator()(VFunc const& opt) const
+	{
+		return VNIL();
+	}
+};
+
 struct VNodeEvaluator : boost::static_visitor<VOption>
 {
 	ERMInterpreter * interp;
@@ -2688,6 +2865,26 @@ struct VNodeEvaluator : boost::static_visitor<VOption>
 			else
 				throw EVermScriptExecError("backquote special form takes only one argument");
 
+		}
+		else if(opt.text == "car")
+		{
+			if(exp.children.size() != 2)
+				throw EVermScriptExecError("car special form takes only one argument");
+
+			auto & arg = exp.children[1];
+			VOption evaluated = interp->eval(arg);
+
+			return boost::apply_visitor(CarEval(interp), evaluated);
+		}
+		else if(opt.text == "cdr")
+		{
+			if(exp.children.size() != 2)
+				throw EVermScriptExecError("cdr special form takes only one argument");
+
+			auto & arg = exp.children[1];
+			VOption evaluated = interp->eval(arg);
+
+			return boost::apply_visitor(CdrEval(interp), evaluated);
 		}
 		else if(opt.text == "if")
 		{
@@ -2826,7 +3023,8 @@ struct VNodeEvaluator : boost::static_visitor<VOption>
 	}
 	VOption operator()(TLiteral const& opt) const
 	{
-		throw EVermScriptExecError("String literal does not evaluate to a function");
+		return opt;
+		//throw EVermScriptExecError("Literal does not evaluate to a function: "+boost::to_string(opt));
 	}
 	VOption operator()(ERM::Tcommand const& opt) const
 	{
@@ -2887,8 +3085,8 @@ VOption ERMInterpreter::eval(VOption line, Environment * env)
 // 		return;
 //
 // 	VOption & car = line.children.car().getAsItem();
-	logGlobal->trace("\tevaluating ");
-	printVOption(line);
+//	logGlobal->trace("\tevaluating ");
+//	printVOption(line);
 	return boost::apply_visitor(VEvaluator(this, env ? *env : *topDyn), line);
 }
 

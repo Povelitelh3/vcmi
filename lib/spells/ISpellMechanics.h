@@ -111,8 +111,6 @@ public:
 class DLL_LINKAGE BattleCast : public IBattleCast
 {
 public:
-	Target target;
-
 	boost::logic::tribool smart;
 	boost::logic::tribool massive;
 
@@ -148,20 +146,17 @@ public:
 
 	void setEffectValue(Value64 value);
 
-	void aimToHex(const BattleHex & destination);
-	void aimToUnit(const battle::Unit * destination);
-
 	///only apply effects to specified targets
-	void applyEffects(const SpellCastEnvironment * env, bool indirect = false, bool ignoreImmunity = false) const;
+	void applyEffects(const SpellCastEnvironment * env, Target target, bool indirect = false, bool ignoreImmunity = false) const;
 
 	///normal cast
-	void cast(const SpellCastEnvironment * env);
+	void cast(const SpellCastEnvironment * env, Target target);
 
 	///cast evaluation
-	void cast(IBattleState * battleState, vstd::RNG & rng);
+	void cast(IBattleState * battleState, vstd::RNG & rng, Target target);
 
 	///cast with silent check for permitted cast
-	bool castIfPossible(const SpellCastEnvironment * env);
+	bool castIfPossible(const SpellCastEnvironment * env, Target target);
 
 	std::vector<Target> findPotentialTargets() const;
 

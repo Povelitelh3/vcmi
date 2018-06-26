@@ -1,12 +1,29 @@
 VERM
 
-; make effect work if hero has expert level in spell school
-
 !?PI;
 
+; make effect work only if hero has expert level in spell school
+
 ![defun applicable []
-	[if [>= effect-level 3]
-		`[1]
-		`[0]
+	[if [>= effect-level 3] 1 0]
+]
+
+![defun check-one [destination]
+	[progn
+		[setq hex [car destination]]
+		[setq x [% hex 17]]
+		[<= x 9]
+	]
+]
+
+
+; make effect work only on left side of battle field
+
+![defun applicableTarget [targets]
+
+	[progn
+		[setq first [car targets]]
+		[setq chkres [check-one first]]
+		[if chkres 1 0]
 	]
 ]

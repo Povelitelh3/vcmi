@@ -98,11 +98,7 @@ TEST_F(ExamplesTest, HelloWorldVERM)
 		"Hello world from macro usage",
 		"Hello world from macro usage",
 		"Hello world from macro usage",
-		"Hello world from macro usage",
-		"Hello world FN1",
-		"Hello world FN2",
-		"Hello world FN1",
-		"Hello world FN2"
+		"Hello world from macro usage"
 	};
 
 	EXPECT_THAT(actualTexts, ContainerEq(expectedTexts));

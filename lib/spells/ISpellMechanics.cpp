@@ -261,20 +261,7 @@ void BattleCast::setEffectValue(BattleCast::Value64 value)
 	effectValue = boost::make_optional(value);
 }
 
-void BattleCast::aimToHex(const BattleHex & destination)
-{
-	target.push_back(Destination(destination));
-}
-
-void BattleCast::aimToUnit(const battle::Unit * destination)
-{
-	if(nullptr == destination)
-		logGlobal->error("BattleCast::aimToUnit: invalid unit.");
-	else
-		target.push_back(Destination(destination));
-}
-
-void BattleCast::applyEffects(const SpellCastEnvironment * env, bool indirect, bool ignoreImmunity) const
+void BattleCast::applyEffects(const SpellCastEnvironment * env, Target target,  bool indirect, bool ignoreImmunity) const
 {
 	auto m = spell->battleMechanics(this);
 
@@ -283,10 +270,11 @@ void BattleCast::applyEffects(const SpellCastEnvironment * env, bool indirect, b
 	m->applyEffects(&proxy, env->getRandomGenerator(), target, indirect, ignoreImmunity);
 }
 
-void BattleCast::cast(const SpellCastEnvironment * env)
+void BattleCast::cast(const SpellCastEnvironment * env, Target target)
 {
 	if(target.empty())
-		aimToHex(BattleHex::INVALID);
+		target.emplace_back();
+
 	auto m = spell->battleMechanics(this);
 
 	const battle::Unit * mainTarget = nullptr;
@@ -326,21 +314,23 @@ void BattleCast::cast(const SpellCastEnvironment * env)
 
 			if(!mirrorTargets.empty())
 			{
-				auto mirrorTarget = (*RandomGeneratorUtil::nextItem(mirrorTargets, env->getRandomGenerator()));
+				auto mirrorDesination = (*RandomGeneratorUtil::nextItem(mirrorTargets, env->getRandomGenerator()));
+
+				Target mirrorTarget;
+				mirrorTarget.emplace_back(mirrorDesination);
 
 				BattleCast mirror(*this, mainTarget);
-				mirror.aimToUnit(mirrorTarget);
-				mirror.cast(env);
+				mirror.cast(env, mirrorTarget);
 			}
 		}
 	}
 }
 
-void BattleCast::cast(IBattleState * battleState, vstd::RNG & rng)
+void BattleCast::cast(IBattleState * battleState, vstd::RNG & rng, Target target)
 {
 	//TODO: make equivalent to normal cast
 	if(target.empty())
-		aimToHex(BattleHex::INVALID);
+		target.emplace_back();
 	auto m = spell->battleMechanics(this);
 
 	//TODO: reflection
@@ -349,11 +339,11 @@ void BattleCast::cast(IBattleState * battleState, vstd::RNG & rng)
 	m->cast(battleState, rng, target);
 }
 
-bool BattleCast::castIfPossible(const SpellCastEnvironment * env)
+bool BattleCast::castIfPossible(const SpellCastEnvironment * env, Target target)
 {
 	if(spell->canBeCast(cb, mode, caster))
 	{
-		cast(env);
+		cast(env, target);
 		return true;
 	}
 	return false;
