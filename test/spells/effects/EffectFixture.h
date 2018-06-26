@@ -12,19 +12,19 @@
 
 #include "../../../lib/spells/effects/Effect.h"
 
-#include "mock/mock_spells_Mechanics.h"
-#include "mock/mock_spells_Problem.h"
-#include "mock/mock_spells_Spell.h"
-#include "mock/mock_spells_SpellService.h"
-#include "mock/mock_IGameInfoCallback.h"
+#include "../../mock/mock_spells_Mechanics.h"
+#include "../../mock/mock_spells_Problem.h"
+#include "../../mock/mock_spells_Spell.h"
+#include "../../mock/mock_spells_SpellService.h"
+#include "../../mock/mock_IGameInfoCallback.h"
 
-#include "mock/mock_Creature.h"
-#include "mock/mock_CreatureService.h"
+#include "../../mock/mock_Creature.h"
+#include "../../mock/mock_CreatureService.h"
 
-#include "mock/mock_BonusBearer.h"
-#include "mock/mock_battle_IBattleState.h"
-#include "mock/mock_battle_Unit.h"
-#include "mock/mock_vstd_RNG.h"
+#include "../../mock/mock_BonusBearer.h"
+#include "../../mock/mock_battle_IBattleState.h"
+#include "../../mock/mock_battle_Unit.h"
+#include "../../mock/mock_vstd_RNG.h"
 
 
 #include "../../../lib/JsonNode.h"

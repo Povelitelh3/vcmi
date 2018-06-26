@@ -12,6 +12,7 @@
 #include "Custom.h"
 #include "Registry.h"
 #include "../ISpellMechanics.h"
+#include "../../battle/Unit.h"
 #include "../../ScriptingService.h"
 #include "../../serializer/JsonSerializeFormat.h"
 
@@ -65,7 +66,42 @@ bool Custom::applicable(Problem & problem, const Mechanics * m) const
 
 bool Custom::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
 {
-	return false;
+	std::shared_ptr<scripting::Context> context = resolveScript(m);
+	if(!context)
+		return false;
+
+	setContextVariables(m, context);
+
+	JsonNode requestP;
+
+	if(target.empty())
+		return false;
+
+	for(auto & dest : target)
+	{
+		JsonNode targetData;
+		targetData.Vector().push_back(JsonUtils::intNode(dest.hexValue.hex));
+
+		if(dest.unitValue)
+			targetData.Vector().push_back(JsonUtils::intNode(dest.unitValue->unitId()));
+		else
+			targetData.Vector().push_back(JsonUtils::intNode(-1));
+
+		requestP.Vector().push_back(targetData);
+	}
+
+	JsonNode request;
+	request.Vector().push_back(requestP);
+
+	JsonNode response = context->callGlobal(APPLICABLE_TARGET, request);
+
+	if(response.getType() != JsonNode::JsonType::DATA_INTEGER)
+	{
+		logMod->error("Invalid API response from script %s.", scriptName);
+		logMod->debug(response.toJson(true));
+		return false;
+	}
+	return response.Integer() == 1;
 }
 
 void Custom::apply(BattleStateProxy * battleState, RNG & rng, const Mechanics * m, const EffectTarget & target) const

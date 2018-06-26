@@ -10,10 +10,11 @@
 #include "StdInc.h"
 
 #include "EffectFixture.h"
+#include "../../JsonComparer.h"
 
-#include "mock/mock_scripting_Context.h"
-#include "mock/mock_scripting_Script.h"
-#include "mock/mock_scripting_Service.h"
+#include "../../mock/mock_scripting_Context.h"
+#include "../../mock/mock_scripting_Script.h"
+#include "../../mock/mock_scripting_Service.h"
 
 namespace test
 {
@@ -36,6 +37,8 @@ public:
 	ServiceMock serviceMock;
 	ScriptMock scriptMock;
 	std::shared_ptr<ContextMock> contextMock;
+
+	JsonNode request;
 
 	CustomTest()
 		: EffectFixture("core:custom")
@@ -61,6 +64,31 @@ public:
 		EXPECT_CALL(*contextMock, setGlobal(Eq("effect-value"), Matcher<int>(Eq(EFFECT_VALUE))));
 	}
 
+	void setDefaultExpectations()
+	{
+		EXPECT_CALL(mechanicsMock, scriptingService()).WillRepeatedly(Return(&serviceMock));
+
+		EXPECT_CALL(serviceMock, resolveScript(Eq(SCRIPT_NAME))).WillOnce(Return(&scriptMock));
+		//TODO: we should cache even isolated context in client|server objects
+		EXPECT_CALL(scriptMock, createIsolatedContext()).WillOnce(Return(contextMock));
+
+		EXPECT_CALL(*contextMock, init(_,_)).Times(1);
+
+		expectSettingContextVariables();
+
+		JsonNode options(JsonNode::JsonType::DATA_STRUCT);
+		options["script"].String() = SCRIPT_NAME;
+		EffectFixture::setupEffect(options);
+	}
+
+	JsonNode saveRequest(const std::string & name, const JsonNode & parameters)
+	{
+		JsonNode response = JsonUtils::intNode(1);
+
+		request = parameters;
+		return response;
+	}
+
 protected:
 	void SetUp() override
 	{
@@ -70,29 +98,56 @@ protected:
 
 TEST_F(CustomTest, ApplicableRedirected)
 {
-	EXPECT_CALL(mechanicsMock, scriptingService()).WillRepeatedly(Return(&serviceMock));
-
-
-	EXPECT_CALL(serviceMock, resolveScript(Eq(SCRIPT_NAME))).WillOnce(Return(&scriptMock));
-	//TODO: we should cache even isolated context in client|server objects
-	EXPECT_CALL(scriptMock, createIsolatedContext()).WillOnce(Return(contextMock));
-
-	EXPECT_CALL(*contextMock, init(_,_)).Times(1);
-
-	expectSettingContextVariables();
+	setDefaultExpectations();
 
 	JsonNode response = JsonUtils::intNode(1);
 
 	EXPECT_CALL(*contextMock, callGlobal(Eq("applicable"),_)).WillOnce(Return(response));//TODO: check call parameter
-	//expect query 'applicable' from script
-
-	JsonNode options(JsonNode::JsonType::DATA_STRUCT);
-	options["script"].String() = SCRIPT_NAME;
-	EffectFixture::setupEffect(options);
 
 	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock));
 }
 
+TEST_F(CustomTest, ApplicableTargetRedirected)
+{
+	setDefaultExpectations();
+
+	EXPECT_CALL(*contextMock, callGlobal(Eq("applicableTarget"),_)).WillOnce(Invoke(this, &saveRequest));
+
+	auto & unit1 = unitsFake.add(BattleSide::ATTACKER);
+
+	EffectTarget target;
+
+	BattleHex hex1(6,7);
+	BattleHex hex2(7,8);
+
+	int32_t id1 = 42;
+
+	EXPECT_CALL(unit1, unitId()).WillOnce(Return(id1));
+
+	target.emplace_back(&unit1, hex1);
+	target.emplace_back(hex2);
+
+	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock, target));
+
+
+	JsonNode first;
+	first.Vector().push_back(JsonUtils::intNode(hex1.hex));
+	first.Vector().push_back(JsonUtils::intNode(id1));
+
+	JsonNode second;
+	second.Vector().push_back(JsonUtils::intNode(hex2.hex));
+	second.Vector().push_back(JsonUtils::intNode(-1));
+
+	JsonNode targets;
+	targets.Vector().push_back(first);
+	targets.Vector().push_back(second);
+
+	JsonNode expected;
+	expected.Vector().push_back(targets);
+
+	JsonComparer c(false);
+	c.compare("applicableTarget request", request, expected);
+}
 
 }
 

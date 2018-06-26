@@ -115,7 +115,7 @@ TEST_F(SpellEffectAPITest, NotApplicableOnRightSideOfField)
 
 	JsonNode first;
 	first.Vector().push_back(JsonUtils::intNode(hex.hex));
-	first.Vector().push_back(JsonNode());
+	first.Vector().push_back(JsonUtils::intNode(-1));
 
 	JsonNode targets;
 	targets.Vector().push_back(first);
