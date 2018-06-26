@@ -38,7 +38,7 @@ std::shared_ptr<scripting::Context> ERMScriptModule::createContextFor(const scri
 {
 	std::shared_ptr<ERMInterpreter> ret = std::make_shared<ERMInterpreter>();
 
-	ret->loadScript(source->sourcePath, source->source);
+	ret->loadScript(source->sourcePath, source->sourceText);
 
 	return ret;
 }

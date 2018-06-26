@@ -66,11 +66,11 @@ TEST_F(ExamplesTest, HelloWorld)
 	JsonNode scriptConfig(JsonNode::JsonType::DATA_STRUCT);
 	scriptConfig["source"].String() = scriptPath;
 
-	ScriptImpl * subject = VLC->scriptHandler->loadFromJson(scriptConfig);
+	ScriptPtr subject = VLC->scriptHandler->loadFromJson(scriptConfig, "test");
 
 	GTEST_ASSERT_NE(subject, nullptr);
 
-	std::shared_ptr<Context> ctx = subject->createIsolatedContext();
+	std::shared_ptr<Context> ctx = subject->createContext();
 	ctx->giveActionCB(&applierMock);
 	ctx->init(&infoMock, battleFake.get());
 }
@@ -84,11 +84,11 @@ TEST_F(ExamplesTest, HelloWorldVERM)
 	JsonNode scriptConfig(JsonNode::JsonType::DATA_STRUCT);
 	scriptConfig["source"].String() = scriptPath;
 
-	ScriptImpl * subject = VLC->scriptHandler->loadFromJson(scriptConfig);
+	ScriptPtr subject = VLC->scriptHandler->loadFromJson(scriptConfig, "test");
 
 	GTEST_ASSERT_NE(subject, nullptr);
 
-	std::shared_ptr<Context> ctx = subject->createIsolatedContext();
+	std::shared_ptr<Context> ctx = subject->createContext();
 	ctx->giveActionCB(&applierMock);
 	ctx->init(&infoMock, battleFake.get());
 

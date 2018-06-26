@@ -25,30 +25,15 @@ class ScriptHandler;
 
 using ModulePtr = std::shared_ptr<CScriptingModule>;
 using ModulesMap = std::map<std::string, ModulePtr>;
-using ScriptMap = std::map<std::string, ScriptImpl *>;
+using ScriptPtr = std::shared_ptr<ScriptImpl>;
+using ScriptMap = std::map<std::string, ScriptPtr>;
 
 class DLL_LINKAGE ScriptImpl : public Script
 {
 public:
-	enum class PersistenceType
-	{
-		STATELESS,
-		ISOLATED,
-		SHARED
-	};
-
-	enum class RunOn
-	{
-		CLIENT,
-		SERVER,
-		BOTH
-	};
-
+	std::string identifier;
 	std::string sourcePath;
-	std::string source;
-
-	PersistenceType persistenceType;
-	RunOn runOn;
+	std::string sourceText;
 
 	ModulePtr host;
 
@@ -56,12 +41,13 @@ public:
 	virtual ~ScriptImpl();
 
 	void serializeJson(JsonSerializeFormat & handler);
+	void serializeJsonState(JsonSerializeFormat & handler);
 
-	std::shared_ptr<Context> createIsolatedContext() const override;
+	std::shared_ptr<Context> createContext() const override;
 private:
 	const ScriptHandler * owner;
 
-	void afterLoad();
+	void resolveHost();
 };
 
 class DLL_LINKAGE ScriptHandler : public ::IHandlerBase, public Service
@@ -75,7 +61,7 @@ public:
 	std::vector<bool> getDefaultAllowed() const override;
 	std::vector<JsonNode> loadLegacyData(size_t dataSize) override;
 
-	ScriptImpl * loadFromJson(const JsonNode & json) const;
+	ScriptPtr loadFromJson(const JsonNode & json, const std::string & identifier) const;
 
 	void loadObject(std::string scope, std::string name, const JsonNode & data) override;
 	void loadObject(std::string scope, std::string name, const JsonNode & data, size_t index) override;
@@ -84,6 +70,14 @@ public:
 	template <typename Handler> void serialize(Handler & h, const int version)
 	{
         //TODO: serialize scripts
+		JsonNode state;
+		if(h.saving)
+			saveState(state);
+
+		h & state;
+
+		if(!h.saving)
+			loadState(state);
 	}
 
 protected:
@@ -94,6 +88,9 @@ private:
 
 	ModulesMap knownModules;
 	ScriptMap objects;
+
+	void loadState(const JsonNode & state);
+	void saveState(JsonNode & state);
 };
 
 }

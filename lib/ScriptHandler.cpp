@@ -23,8 +23,6 @@ namespace scripting
 
 ScriptImpl::ScriptImpl(const ScriptHandler * owner_)
 	:owner(owner_),
-	persistenceType(PersistenceType::STATELESS),
-	runOn(RunOn::SERVER),
 	host()
 {
 
@@ -32,7 +30,7 @@ ScriptImpl::ScriptImpl(const ScriptHandler * owner_)
 
 ScriptImpl::~ScriptImpl() = default;
 
-std::shared_ptr<Context> ScriptImpl::createIsolatedContext() const
+std::shared_ptr<Context> ScriptImpl::createContext() const
 {
 	return host->createContextFor(this);
 }
@@ -42,22 +40,33 @@ void ScriptImpl::serializeJson(JsonSerializeFormat & handler)
 	handler.serializeString("source", sourcePath);
 
 	if(!handler.saving)
-		afterLoad();
+	{
+		resolveHost();
+
+		ResourceID sourcePathId(sourcePath);
+
+		auto rawData = CResourceHandler::get()->load(sourcePathId)->readAll();
+
+		sourceText = std::string((char *)rawData.first.get(), rawData.second);
+	}
 }
 
-void ScriptImpl::afterLoad()
+void ScriptImpl::serializeJsonState(JsonSerializeFormat & handler)
+{
+	handler.serializeString("sourcePath", sourcePath);
+	handler.serializeString("sourceText", sourcePath);
+
+	if(!handler.saving)
+	{
+		resolveHost();
+	}
+}
+
+void ScriptImpl::resolveHost()
 {
 	//TODO: adjust when new languages will be added
-
-	ResourceID sourcePathId(sourcePath);
-
-	auto rawData = CResourceHandler::get()->load(sourcePathId)->readAll();
-
-	source = std::string((char *)rawData.first.get(), rawData.second);
-
 	host = owner->knownModules.at("erm");
 }
-
 
 ScriptHandler::ScriptHandler()
 {
@@ -83,7 +92,7 @@ const Script * ScriptHandler::resolveScript(const std::string & name) const
 	}
 	else
 	{
-		return iter->second;
+		return iter->second.get();
 	}
 }
 
@@ -97,19 +106,20 @@ std::vector<JsonNode> ScriptHandler::loadLegacyData(size_t dataSize)
 	return std::vector<JsonNode>();
 }
 
-ScriptImpl * ScriptHandler::loadFromJson(const JsonNode & json) const
+ScriptPtr ScriptHandler::loadFromJson(const JsonNode & json, const std::string & identifier) const
 {
-	ScriptImpl * ret = new ScriptImpl(this);
+	ScriptPtr ret = std::make_shared<ScriptImpl>(this);
 
 	JsonDeserializer handler(nullptr, json);
+	ret->identifier = identifier;
 	ret->serializeJson(handler);
 	return ret;
 }
 
-
 void ScriptHandler::loadObject(std::string scope, std::string name, const JsonNode & data)
 {
-
+	auto object = loadFromJson(data, normalizeIdentifier(scope, "core", name));
+	objects[object->identifier] = object;
 }
 
 void ScriptHandler::loadObject(std::string scope, std::string name, const JsonNode & data, size_t index)
@@ -117,6 +127,43 @@ void ScriptHandler::loadObject(std::string scope, std::string name, const JsonNo
 	throw std::runtime_error("No legacy data load allowed for scripts");
 }
 
+void ScriptHandler::loadState(const JsonNode & state)
+{
+	objects.clear();
+
+	const JsonNode & scriptsData = state["scripts"];
+
+	for(auto & keyValue : scriptsData.Struct())
+	{
+		std::string name = keyValue.first;
+
+		const JsonNode & scriptData = keyValue.second;
+
+		ScriptPtr script = std::make_shared<ScriptImpl>(this);
+
+		JsonDeserializer handler(nullptr, scriptData);
+		script->serializeJsonState(handler);
+		objects[name] = script;
+	}
+}
+
+void ScriptHandler::saveState(JsonNode & state)
+{
+	JsonNode & scriptsData = state["scripts"];
+
+	for(auto & keyValue : objects)
+	{
+		std::string name = keyValue.first;
+
+		ScriptPtr script = keyValue.second;
+		JsonNode scriptData;
+		JsonSerializer handler(nullptr, scriptData);
+		script->serializeJsonState(handler);
+
+		scriptsData[name] = std::move(scriptData);
+	}
+
+}
 
 
 }

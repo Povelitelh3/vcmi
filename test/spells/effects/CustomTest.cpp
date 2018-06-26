@@ -70,7 +70,7 @@ public:
 
 		EXPECT_CALL(serviceMock, resolveScript(Eq(SCRIPT_NAME))).WillOnce(Return(&scriptMock));
 		//TODO: we should cache even isolated context in client|server objects
-		EXPECT_CALL(scriptMock, createIsolatedContext()).WillOnce(Return(contextMock));
+		EXPECT_CALL(scriptMock, createContext()).WillOnce(Return(contextMock));
 
 		EXPECT_CALL(*contextMock, init(_,_)).Times(1);
 

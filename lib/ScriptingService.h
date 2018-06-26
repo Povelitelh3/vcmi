@@ -38,7 +38,7 @@ class DLL_LINKAGE Script
 public:
 	virtual ~Script() = default;
 
-	virtual std::shared_ptr<Context> createIsolatedContext() const = 0;
+	virtual std::shared_ptr<Context> createContext() const = 0;
 };
 
 class DLL_LINKAGE Service

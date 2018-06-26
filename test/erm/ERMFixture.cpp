@@ -35,9 +35,9 @@ ERMFixture::~ERMFixture() = default;
 
 void ERMFixture::loadScript(const JsonNode & scriptConfig)
 {
-	subject.reset(VLC->scriptHandler->loadFromJson(scriptConfig));
+	subject = VLC->scriptHandler->loadFromJson(scriptConfig, "test");
 
-	context = subject->createIsolatedContext();
+	context = subject->createContext();
 
 	context->init(&infoMock, battleFake.get());
 }

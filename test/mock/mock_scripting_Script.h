@@ -19,7 +19,7 @@ class ScriptMock : public Script
 {
 public:
 
-	MOCK_CONST_METHOD0(createIsolatedContext, std::shared_ptr<Context>());
+	MOCK_CONST_METHOD0(createContext, std::shared_ptr<Context>());
 
 };
 
