@@ -25,6 +25,7 @@
 #include "../../mock/mock_battle_IBattleState.h"
 #include "../../mock/mock_battle_Unit.h"
 #include "../../mock/mock_vstd_RNG.h"
+#include "../../mock/mock_scripting_Pool.h"
 
 
 #include "../../../lib/JsonNode.h"
@@ -40,6 +41,11 @@ bool operator==(const Bonus & b1, const Bonus & b2);
 
 namespace test
 {
+
+using namespace ::testing;
+using namespace ::spells;
+using namespace ::spells::effects;
+using namespace ::scripting;
 
 class EffectFixture
 {
@@ -74,26 +80,31 @@ public:
 
 	class BattleFake : public CBattleInfoCallback, public BattleStateMock
 	{
+		std::shared_ptr<PoolMock> pool;
 	public:
-		BattleFake();
+		BattleFake(std::shared_ptr<PoolMock> pool_);
 
 		void setUp();
+
+		scripting::Pool * getContextPool() const override;
 	};
 
-	std::shared_ptr<::spells::effects::Effect> subject;
-	::spells::ProblemMock problemMock;
-	::testing::StrictMock<::spells::MechanicsMock> mechanicsMock;
-	::testing::StrictMock<CreatureServiceMock> creatureServiceMock;
-	::testing::StrictMock<CreatureMock> creatureStub;
-	::testing::StrictMock<::spells::SpellServiceMock> spellServiceMock;
-	::testing::StrictMock<::spells::SpellMock> spellStub;
-	::testing::StrictMock<IGameInfoCallbackMock> gameMock;
+	std::shared_ptr<Effect> subject;
+	ProblemMock problemMock;
+	StrictMock<MechanicsMock> mechanicsMock;
+	StrictMock<CreatureServiceMock> creatureServiceMock;
+	StrictMock<CreatureMock> creatureStub;
+	StrictMock<SpellServiceMock> spellServiceMock;
+	StrictMock<SpellMock> spellStub;
+	StrictMock<IGameInfoCallbackMock> gameMock;
 	vstd::RNGMock rngMock;
 
 	UnitsFake unitsFake;
+
+	std::shared_ptr<PoolMock> pool;
 	std::shared_ptr<BattleFake> battleFake;
 
-	std::shared_ptr<::spells::BattleStateProxy> battleProxy;
+	std::shared_ptr<BattleStateProxy> battleProxy;
 
 	std::string effectName;
 

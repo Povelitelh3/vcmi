@@ -116,6 +116,7 @@
 		<Unit filename="mock/mock_battle_IBattleState.h" />
 		<Unit filename="mock/mock_battle_Unit.h" />
 		<Unit filename="mock/mock_scripting_Context.h" />
+		<Unit filename="mock/mock_scripting_Pool.h" />
 		<Unit filename="mock/mock_scripting_Script.h" />
 		<Unit filename="mock/mock_scripting_Service.h" />
 		<Unit filename="mock/mock_spells_Mechanics.h" />

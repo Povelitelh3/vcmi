@@ -37,10 +37,6 @@ bool operator==(const Bonus & b1, const Bonus & b2)
 namespace test
 {
 
-using namespace ::spells;
-using namespace ::spells::effects;
-using namespace ::testing;
-
 void EffectFixture::UnitFake::addNewBonus(const std::shared_ptr<Bonus> & b)
 {
 	bonusFake.addNewBonus(b);
@@ -91,9 +87,10 @@ battle::Units EffectFixture::UnitsFake::getUnitsIf(battle::UnitFilter predicate)
 	return ret;
 }
 
-EffectFixture::BattleFake::BattleFake()
+EffectFixture::BattleFake::BattleFake(std::shared_ptr<PoolMock> pool_)
 	: CBattleInfoCallback(),
-	BattleStateMock()
+	BattleStateMock(),
+	pool(pool_)
 {
 }
 
@@ -101,6 +98,12 @@ void EffectFixture::BattleFake::setUp()
 {
 	CBattleInfoCallback::setBattle(this);
 }
+
+Pool * EffectFixture::BattleFake::getContextPool() const
+{
+	return pool.get();
+}
+
 
 void EffectFixture::UnitsFake::setDefaultBonusExpectations()
 {
@@ -132,7 +135,10 @@ void EffectFixture::setUp()
 {
 	subject = Effect::create(effectName);
 	ASSERT_TRUE(subject);
-	battleFake = std::make_shared<BattleFake>();
+
+	pool = std::make_shared<PoolMock>();
+
+	battleFake = std::make_shared<BattleFake>(pool);
 	battleFake->setUp();
 
 	EXPECT_CALL(mechanicsMock, game()).WillRepeatedly(Return(&gameMock));

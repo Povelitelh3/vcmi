@@ -12,6 +12,8 @@
 #include "../../lib/NetPacksBase.h"
 #include "../../lib/CStack.h"
 
+using scripting::Pool;
+
 void actualizeEffect(TBonusListPtr target, const Bonus & ef)
 {
 	for(auto bonus : *target) //TODO: optimize
@@ -191,9 +193,10 @@ void StackWithBonuses::spendMana(const spells::PacketSender * server, const int 
 	//TODO: evaluate cast use
 }
 
-HypotheticBattle::HypotheticBattle(Subject realBattle)
+HypotheticBattle::HypotheticBattle(Subject realBattle, Pool * pool_)
 	: BattleProxy(realBattle),
-	bonusTreeVersion(1)
+	bonusTreeVersion(1),
+	pool(pool_)
 {
 	auto activeUnit = realBattle->battleActiveUnit();
 	activeUnitId = activeUnit ? activeUnit->unitId() : -1;
@@ -390,3 +393,9 @@ int64_t HypotheticBattle::getTreeVersion() const
 {
 	return getBattleNode()->getTreeVersion() + bonusTreeVersion;
 }
+
+Pool * HypotheticBattle::getContextPool() const
+{
+	return pool;
+}
+

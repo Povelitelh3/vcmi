@@ -46,6 +46,7 @@
 #include "../lib/registerTypes/RegisterTypes.h"
 #include "../lib/serializer/CTypeList.h"
 #include "../lib/serializer/Connection.h"
+#include "../lib/ScriptHandler.h"
 
 #ifndef _MSC_VER
 #include <boost/thread/xtime.hpp>
@@ -1929,6 +1930,8 @@ void CGameHandler::newTurn()
 void CGameHandler::run(bool resume)
 {
 	LOG_TRACE_PARAMS(logGlobal, "resume=%d", resume);
+
+	serverScripts.reset(new scripting::PoolImpl());
 
 	using namespace boost::posix_time;
 	for (auto cc : lobby->connections)
@@ -6729,6 +6732,16 @@ CGameHandler::FinishingBattleHelper::FinishingBattleHelper()
 CRandomGenerator & CGameHandler::getRandomGenerator()
 {
 	return CRandomGenerator::getDefault();
+}
+
+scripting::Pool * CGameHandler::getGlobalContextPool() const
+{
+	return serverScripts.get();
+}
+
+scripting::Pool *  CGameHandler::getContextPool() const
+{
+	return serverScripts.get();
 }
 
 ///ServerSpellCastEnvironment

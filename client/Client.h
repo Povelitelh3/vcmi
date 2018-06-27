@@ -36,6 +36,12 @@ namespace boost { class thread; }
 template<typename T> class CApplier;
 class CBaseForCLApply;
 
+namespace scripting
+{
+	class PoolImpl;
+}
+
+
 template<typename T>
 class ThreadSafeVector
 {
@@ -206,4 +212,8 @@ public:
 
 	void changeFogOfWar(int3 center, ui32 radius, PlayerColor player, bool hide) override {}
 	void changeFogOfWar(std::unordered_set<int3, ShashInt3> & tiles, PlayerColor player, bool hide) override {}
+
+	scripting::Pool * getGlobalContextPool() const override;
+private:
+	std::shared_ptr<scripting::PoolImpl> clientScripts;
 };

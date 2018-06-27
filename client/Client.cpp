@@ -48,6 +48,7 @@
 #include "gui/CGuiHandler.h"
 #include "CMT.h"
 #include "CServerHandler.h"
+#include "../lib/ScriptHandler.h"
 
 #ifdef VCMI_ANDROID
 #include "lib/CAndroidVMHelper.h"
@@ -126,6 +127,7 @@ void CClient::newGame()
 	logNetwork->trace("Initializing GameState (together): %d ms", CSH->th->getDiff());
 
 	initMapHandler();
+	clientScripts.reset(new scripting::PoolImpl());
 	initPlayerInterfaces();
 }
 
@@ -170,6 +172,9 @@ void CClient::loadGame()
 
 	gs->updateOnLoad(CSH->si.get());
 	initMapHandler();
+
+	clientScripts.reset(new scripting::PoolImpl());
+
 	serialize(loader->serializer, loader->serializer.fileVersion);
 	initPlayerInterfaces();
 }
@@ -188,6 +193,13 @@ void CClient::serialize(BinarySerializer & h, const int version)
 		h & i->second->dllName;
 		h & i->second->human;
 		i->second->saveGame(h, version);
+	}
+
+	if(version >= 790)
+	{
+		//TODO: save scripts state
+		JsonNode scriptsState;
+		h & scriptsState;
 	}
 }
 
@@ -252,6 +264,14 @@ void CClient::serialize(BinaryDeserializer & h, const int version)
 		}
 		nInt.reset();
 	}
+
+	if(version >= 790)
+	{
+		//TODO: load scripts state
+		JsonNode scriptsState;
+		h & scriptsState;
+	}
+
 	logNetwork->trace("Loaded client part of save %d ms", CSH->th->getDiff());
 }
 
@@ -269,6 +289,8 @@ void CClient::save(const std::string & fname)
 
 void CClient::endGame()
 {
+	clientScripts.reset();
+
 	//suggest interfaces to finish their stuff (AI should interrupt any bg working threads)
 	for(auto & i : playerint)
 		i.second->finish();
@@ -639,6 +661,12 @@ PlayerColor CClient::getLocalPlayer() const
 		return LOCPLINT->playerID;
 	return getCurrentPlayer();
 }
+
+scripting::Pool * CClient::getGlobalContextPool() const
+{
+	return clientScripts.get();
+}
+
 
 #ifdef VCMI_ANDROID
 extern "C" JNIEXPORT void JNICALL Java_eu_vcmi_vcmi_NativeMethods_notifyServerReady(JNIEnv * env, jobject cls)

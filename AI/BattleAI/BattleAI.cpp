@@ -20,6 +20,7 @@
 #include "../../lib/spells/CSpellHandler.h"
 #include "../../lib/spells/ISpellMechanics.h"
 #include "../../lib/CStack.h"//todo: remove
+#include "../../lib/ScriptHandler.h"
 
 #define LOGL(text) print(text)
 #define LOGFL(text, formattingEl) print(boost::str(boost::format(text) % formattingEl))
@@ -122,7 +123,9 @@ BattleAction CBattleAI::activeStack( const CStack * stack )
 			return *action;
 		//best action is from effective owner point if view, we are effective owner as we received "activeStack"
 
-		HypotheticBattle hb(getCbc());
+		scripting::PoolImpl pool;
+
+		HypotheticBattle hb(getCbc(), &pool);
 
 		PotentialTargets targets(stack, &hb);
 		if(targets.possibleAttacks.size())
@@ -397,8 +400,9 @@ void CBattleAI::attemptCastingSpell()
 
 	{
 		bool enemyHadTurn = false;
+		scripting::PoolImpl pool;
 
-		HypotheticBattle state(cb);
+		HypotheticBattle state(cb, &pool);
 		evaluateQueue(valueOfStack, turnOrder, &state, 0, &enemyHadTurn);
 
 		if(!enemyHadTurn)
@@ -413,9 +417,11 @@ void CBattleAI::attemptCastingSpell()
 		}
 	}
 
-	auto evaluateSpellcast = [&] (PossibleSpellcast * ps)
+	auto evaluateSpellcast = [&] (PossibleSpellcast * ps, std::shared_ptr<scripting::Pool> pool)
 	{
-		HypotheticBattle state(cb);
+		HypotheticBattle state(cb, pool.get());
+
+		//TODO: reset context?
 
 		spells::BattleCast cast(&state, hero, spells::Mode::HERO, ps->spell);
 		cast.cast(&state, rngStub, ps->dest);
@@ -477,10 +483,12 @@ void CBattleAI::attemptCastingSpell()
 		}
 	};
 
-	std::vector<std::function<void()>> tasks;
+	using EvalRunner = ThreadPool<scripting::Pool>;
+
+	EvalRunner::Tasks tasks;
 
 	for(PossibleSpellcast & psc : possibleCasts)
-		tasks.push_back(std::bind(evaluateSpellcast, &psc));
+		tasks.push_back(std::bind(evaluateSpellcast, &psc, _1));
 
 	uint32_t threadCount = boost::thread::hardware_concurrency();
 
@@ -492,8 +500,15 @@ void CBattleAI::attemptCastingSpell()
 
 	CStopWatch timer;
 
-	CThreadHelper threadHelper(&tasks, threadCount);
-	threadHelper.run();
+	std::vector<std::shared_ptr<scripting::Pool>> scriptsPool;
+
+	for(uint32_t idx = 0; idx < threadCount; idx++)
+	{
+		scriptsPool.emplace_back(new scripting::PoolImpl());
+	}
+
+	EvalRunner runner(&tasks, scriptsPool);
+	runner.run();
 
 	LOGFL("Evaluation took %d ms", timer.getDiff());
 

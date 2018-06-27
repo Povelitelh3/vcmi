@@ -20,6 +20,8 @@
 #include "../mock/mock_IGameEventRealizer.h"
 #include "../mock/mock_IGameInfoCallback.h"
 #include "../mock/mock_battle_IBattleState.h"
+#include "../mock/mock_scripting_Pool.h"
+
 
 #include "../JsonComparer.h"
 
@@ -35,11 +37,16 @@ class ERMFixture
 public:
 	class BattleFake : public CBattleInfoCallback, public BattleStateMock
 	{
+		std::shared_ptr<PoolMock> pool;
 	public:
-		BattleFake();
+		BattleFake(std::shared_ptr<PoolMock> pool_);
 
 		void setUp();
+
+		scripting::Pool * getContextPool() const override;
 	};
+
+	std::shared_ptr<PoolMock> pool;
 
 	std::shared_ptr<ScriptImpl> subject;
 	std::shared_ptr<Context> context;

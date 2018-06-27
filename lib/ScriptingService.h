@@ -47,7 +47,14 @@ public:
 	virtual ~Service() = default;
 
 	virtual const Script * resolveScript(const std::string & name) const = 0;
+};
 
+class DLL_LINKAGE Pool
+{
+public:
+	virtual ~Pool() = default;
+
+	virtual std::shared_ptr<Context> getContext(const Script * script) = 0;
 };
 
 }

@@ -14,15 +14,21 @@
 namespace test
 {
 
-ERMFixture::BattleFake::BattleFake()
+ERMFixture::BattleFake::BattleFake(std::shared_ptr<PoolMock> pool_)
 	: CBattleInfoCallback(),
-	BattleStateMock()
+	BattleStateMock(),
+	pool(pool_)
 {
 }
 
 void ERMFixture::BattleFake::setUp()
 {
 	CBattleInfoCallback::setBattle(this);
+}
+
+Pool * ERMFixture::BattleFake::getContextPool() const
+{
+	return pool.get();
 }
 
 
@@ -40,12 +46,15 @@ void ERMFixture::loadScript(const JsonNode & scriptConfig)
 	context = subject->createContext();
 
 	context->init(&infoMock, battleFake.get());
-}
 
+	EXPECT_CALL(*pool, getContext(_)).WillRepeatedly(Return(context));
+}
 
 void ERMFixture::setUp()
 {
-	battleFake = std::make_shared<BattleFake>();
+	pool = std::make_shared<PoolMock>();
+
+	battleFake = std::make_shared<BattleFake>(pool);
 	battleFake->setUp();
 }
 

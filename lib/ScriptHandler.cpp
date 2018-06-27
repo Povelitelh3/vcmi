@@ -68,6 +68,22 @@ void ScriptImpl::resolveHost()
 	host = owner->knownModules.at("erm");
 }
 
+std::shared_ptr<Context> PoolImpl::getContext(const Script * script)
+{
+	auto iter = cache.find(script);
+
+	if(iter == cache.end())
+	{
+		auto context = script->createContext();
+		cache[script] = context;
+		return context;
+	}
+	else
+	{
+		return iter->second;
+	}
+}
+
 ScriptHandler::ScriptHandler()
 {
 	//TODO: adjust when new languages will be added

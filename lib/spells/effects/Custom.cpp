@@ -13,6 +13,7 @@
 #include "Registry.h"
 #include "../ISpellMechanics.h"
 #include "../../battle/Unit.h"
+#include "../../battle/CBattleInfoCallback.h"
 #include "../../ScriptingService.h"
 #include "../../serializer/JsonSerializeFormat.h"
 
@@ -131,7 +132,7 @@ std::shared_ptr<scripting::Context> Custom::resolveScript(const Mechanics * m) c
 	if(!script)
 		return std::shared_ptr<scripting::Context>();
 
-	std::shared_ptr<scripting::Context> context = script->createContext();
+	auto context = m->battle()->getScriptingContext(script);
 	context->init(m->game(), m->battle());
 	return context;
 }

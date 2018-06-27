@@ -50,6 +50,14 @@ private:
 	void resolveHost();
 };
 
+class DLL_LINKAGE PoolImpl : public Pool
+{
+public:
+	std::shared_ptr<Context> getContext(const Script * script) override;
+private:
+	std::map<const Script *, std::shared_ptr<Context>> cache;
+};
+
 class DLL_LINKAGE ScriptHandler : public ::IHandlerBase, public Service
 {
 public:

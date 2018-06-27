@@ -25,6 +25,13 @@ class CStackBasicDescriptor;
 class CGCreature;
 struct ShashInt3;
 
+namespace scripting
+{
+	class Context;
+	class Pool;
+	class Script;
+}
+
 class DLL_LINKAGE CPrivilegedInfoCallback : public CGameInfoCallback
 {
 public:
@@ -129,6 +136,8 @@ public:
 	const CGObjectInstance *putNewObject(Obj ID, int subID, int3 pos);
 	const CGCreature *putNewMonster(CreatureID creID, int count, int3 pos);
 	void setObjProperty(ObjectInstanceID objid, int prop, si64 val);
+
+	virtual scripting::Pool * getGlobalContextPool() const = 0;
 
 	//get info
 	virtual bool isVisitCoveredByAnotherQuery(const CGObjectInstance *obj, const CGHeroInstance *hero);
