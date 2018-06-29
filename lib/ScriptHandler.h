@@ -77,7 +77,6 @@ public:
 
 	template <typename Handler> void serialize(Handler & h, const int version)
 	{
-        //TODO: serialize scripts
 		JsonNode state;
 		if(h.saving)
 			saveState(state);

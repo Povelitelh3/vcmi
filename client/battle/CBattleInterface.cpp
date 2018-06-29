@@ -3195,7 +3195,9 @@ void CBattleInterface::showHighlightedHexes(SDL_Surface *to)
 				if(caster && spell) //when casting spell
 				{
 					// printing shaded hex(es)
-					auto shaded = spell->rangeInHexes(curInt->cb.get(), mode, caster, currentlyHoveredHex);
+					spells::BattleCast event(curInt->cb.get(), caster, mode, spell);
+					auto shaded = spell->battleMechanics(&event)->rangeInHexes(currentlyHoveredHex);
+
 					for(BattleHex shadedHex : shaded)
 					{
 						if((shadedHex.getX() != 0) && (shadedHex.getX() != GameConstants::BFIELD_WIDTH - 1))

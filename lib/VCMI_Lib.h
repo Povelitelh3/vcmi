@@ -74,6 +74,11 @@ public:
 
 	template <typename Handler> void serialize(Handler &h, const int version)
 	{
+		if(version >= 790)
+		{
+			h & scriptHandler;//must be first (or second after modh), it can modify factories other handlers depends on
+		}
+
 		h & heroh;
 		h & arth;
 		h & creh;
@@ -88,11 +93,6 @@ public:
 		h & modh;
 		h & IS_AI_ENABLED;
 		h & bth;
-
-		if(version >= 790)
-		{
-			h & scriptHandler;
-		}
 
 		if(!h.saving)
 		{

@@ -17,7 +17,7 @@
 #include "../../ScriptingService.h"
 #include "../../serializer/JsonSerializeFormat.h"
 
-static const std::string EFFECT_NAME = "core:custom";
+static const std::string EFFECT_NAME = "core:custom";//todo: move registration to script handler
 
 static const std::string APPLICABLE_GENERAL = "applicable";
 static const std::string APPLICABLE_TARGET = "applicableTarget";

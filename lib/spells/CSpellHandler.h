@@ -242,8 +242,6 @@ public:
 	CSpell();
 	~CSpell();
 
-	std::vector<BattleHex> rangeInHexes(const CBattleInfoCallback * cb, spells::Mode mode, const spells::Caster * caster, BattleHex centralHex) const;
-
 	spells::AimType getTargetType() const;
 
 	bool isCombatSpell() const;
@@ -265,9 +263,6 @@ public:
 	bool hasBattleEffects() const;
 	///calculate spell damage on stack taking caster`s secondary skills and affectedCreature`s bonuses into account
 	int64_t calculateDamage(const spells::Caster * caster) const;
-
-	///selects from allStacks actually affected stacks
-	std::vector<const CStack *> getAffectedStacks(const CBattleInfoCallback * cb, spells::Mode mode, const spells::Caster * caster, int spellLvl, const spells::Target & target) const;
 
 	si32 getCost(const int skillLevel) const;
 

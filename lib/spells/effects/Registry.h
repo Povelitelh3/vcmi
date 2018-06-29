@@ -24,7 +24,7 @@ namespace spells
 namespace effects
 {
 
-class IEffectFactory
+class DLL_LINKAGE IEffectFactory
 {
 public:
 	IEffectFactory() = default;
@@ -33,7 +33,7 @@ public:
 	virtual Effect * create() const = 0;
 };
 
-class Registry
+class DLL_LINKAGE Registry
 {
 public:
 	virtual ~Registry();

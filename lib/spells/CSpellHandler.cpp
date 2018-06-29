@@ -168,20 +168,6 @@ bool CSpell::canBeCast(spells::Problem & problem, const CBattleInfoCallback * cb
 	return mechanics->canBeCast(problem);
 }
 
-std::vector<BattleHex> CSpell::rangeInHexes(const CBattleInfoCallback * cb, spells::Mode mode, const spells::Caster * caster, BattleHex centralHex) const
-{
-	spells::BattleCast event(cb, caster, mode, this);
-	return battleMechanics(&event)->rangeInHexes(centralHex);
-}
-
-std::vector<const CStack *> CSpell::getAffectedStacks(const CBattleInfoCallback * cb, spells::Mode mode, const spells::Caster * caster, int spellLvl, const spells::Target & target) const
-{
-	//TODO: remove and add new method to BattleCast
-	spells::BattleCast event(cb, caster, mode, this);
-	event.setSpellLevel(spellLvl);
-	return battleMechanics(&event)->getAffectedStacks(target);
-}
-
 spells::AimType CSpell::getTargetType() const
 {
 	return targetType;

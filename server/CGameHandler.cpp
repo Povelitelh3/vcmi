@@ -1025,10 +1025,15 @@ void CGameHandler::makeAttack(const CStack * attacker, const CStack * defender, 
 
 		//TODO: should spell override creature`s projectile?
 
+        auto spell = bat.spellID.toSpell();
+
 		battle::Target target;
 		target.emplace_back(defender);
 
-		auto attackedCreatures = SpellID(bonus->subtype).toSpell()->getAffectedStacks(gs->curB, spells::Mode::SPELL_LIKE_ATTACK, attacker, bonus->val, target);
+		spells::BattleCast event(gs->curB, attacker, spells::Mode::SPELL_LIKE_ATTACK, spell);
+		event.setSpellLevel(bonus->val);
+
+		auto attackedCreatures = spell->battleMechanics(&event)->getAffectedStacks(target);
 
 		//TODO: get exact attacked hex for defender
 
