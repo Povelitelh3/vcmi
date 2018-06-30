@@ -54,7 +54,7 @@ void ScriptImpl::serializeJson(JsonSerializeFormat & handler)
 void ScriptImpl::serializeJsonState(JsonSerializeFormat & handler)
 {
 	handler.serializeString("sourcePath", sourcePath);
-	handler.serializeString("sourceText", sourcePath);
+	handler.serializeString("sourceText", sourceText);
 
 	if(!handler.saving)
 	{
@@ -64,8 +64,14 @@ void ScriptImpl::serializeJsonState(JsonSerializeFormat & handler)
 
 void ScriptImpl::resolveHost()
 {
-	//TODO: adjust when new languages will be added
-	host = owner->knownModules.at("erm");
+	ResourceID sourcePathId(sourcePath);
+
+	if(sourcePathId.getType() == EResType::ERM)
+		host = owner->erm;
+	else if(sourcePathId.getType() == EResType::LUA)
+		host = owner->lua;
+	else
+		throw std::runtime_error("Unknown script language in:"+sourcePath);
 }
 
 std::shared_ptr<Context> PoolImpl::getContext(const Script * script)
@@ -86,13 +92,11 @@ std::shared_ptr<Context> PoolImpl::getContext(const Script * script)
 
 ScriptHandler::ScriptHandler()
 {
-	//TODO: adjust when new languages will be added
+	boost::filesystem::path filePath = VCMIDirs::get().fullLibraryPath("scripting", "vcmiERM");
+	erm = CDynLibHandler::getNewScriptingModule(filePath);
 
-	const boost::filesystem::path filePath = VCMIDirs::get().fullLibraryPath("scripting", "vcmiERM");
-
-	auto module = CDynLibHandler::getNewScriptingModule(filePath);
-
-	knownModules["erm"] = module;
+	filePath = VCMIDirs::get().fullLibraryPath("scripting", "vcmiLua");
+	lua = CDynLibHandler::getNewScriptingModule(filePath);
 }
 
 ScriptHandler::~ScriptHandler() = default;

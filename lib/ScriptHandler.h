@@ -24,7 +24,6 @@ class ScriptImpl;
 class ScriptHandler;
 
 using ModulePtr = std::shared_ptr<CScriptingModule>;
-using ModulesMap = std::map<std::string, ModulePtr>;
 using ScriptPtr = std::shared_ptr<ScriptImpl>;
 using ScriptMap = std::map<std::string, ScriptPtr>;
 
@@ -90,10 +89,11 @@ public:
 protected:
 
 private:
-
 	friend class ScriptImpl;
 
-	ModulesMap knownModules;
+	ModulePtr erm;
+	ModulePtr lua;
+
 	ScriptMap objects;
 
 	void loadState(const JsonNode & state);

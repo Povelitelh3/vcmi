@@ -29,6 +29,7 @@
 		<Project filename="scripting/erm/ERM.cbp">
 			<Depends filename="lib/VCMI_lib.cbp" />
 		</Project>
+		<Project filename="scripting/lua/Lua.cbp" />
 		<Project filename="test/Test.cbp">
 			<Depends filename="AI/EmptyAI/EmptyAI.cbp" />
 			<Depends filename="AI/StupidAI/StupidAI.cbp" />

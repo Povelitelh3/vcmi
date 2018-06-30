@@ -156,7 +156,8 @@ EResType::Type EResTypeHelper::getTypeFromExtension(std::string extension)
 		{".ERT",   EResType::ERT},
 		{".ERS",   EResType::ERS},
 		{".VMAP",  EResType::MAP},
-		{".VERM",  EResType::ERM}
+		{".VERM",  EResType::ERM},
+		{".LUA",   EResType::LUA}
 	};
 
 	auto iter = stringToRes.find(extension);
