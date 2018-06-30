@@ -775,7 +775,7 @@ public:
 	OPERATOR_DEFINITION_INTEGER(%)
 };
 
-class ERMInterpreter : public ::scripting::Context, public IGameEventsReceiver, public IBattleEventsReceiver
+class ERMInterpreter : public ::scripting::ContextBase, public IGameEventsReceiver, public IBattleEventsReceiver
 {
 /*not so*/ public:
 // 	friend class ScriptScanner;

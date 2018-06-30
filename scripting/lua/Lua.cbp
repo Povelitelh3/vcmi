@@ -58,7 +58,7 @@
 			<Add option="-lboost_thread$(#boost.libsuffix)" />
 			<Add option="-lboost_chrono$(#boost.libsuffix)" />
 			<Add option="-lVCMI_lib" />
-			<Add library="../lua51.dll" />
+			<Add library="../../lua51.dll" />
 			<Add directory=".." />
 			<Add directory="../.." />
 		</Linker>

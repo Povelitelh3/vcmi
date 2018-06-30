@@ -11,10 +11,10 @@
 
 #include "../../lib/CScriptingModule.h"
 
-class ERMScriptModule : public CScriptingModule
+class ERMScriptModule : public scripting::Module
 {
 public:
 	ERMScriptModule();
-	std::shared_ptr<scripting::Context> createContextFor(const scripting::ScriptImpl * source) const override;
+	std::shared_ptr<scripting::ContextBase> createContextFor(const scripting::ScriptImpl * source) const override;
 };
 

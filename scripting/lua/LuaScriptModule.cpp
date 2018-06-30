@@ -12,28 +12,32 @@
 #include "LuaScriptModule.h"
 #include "LuaScriptingContext.h"
 
-LuaScriptModule::LuaScriptModule() = default;
-LuaScriptModule::~LuaScriptModule() = default;
-
 const char *g_cszAiName = "Lua interpreter";
 
-extern "C" DLL_EXPORT void GetAiName(char* name)
+extern "C" DLL_EXPORT void GetAiName(char * name)
 {
 	strcpy_s(name, strlen(g_cszAiName) + 1, g_cszAiName);
 }
 
-extern "C" DLL_EXPORT void GetNewModule(std::shared_ptr<CScriptingModule> &out)
+extern "C" DLL_EXPORT void GetNewModule(std::shared_ptr<scripting::Module> & out)
 {
-	out = std::make_shared<LuaScriptModule>();
+	out = std::make_shared<scripting::LuaScriptModule>();
 }
 
+namespace scripting
+{
 
-std::shared_ptr<scripting::Context> LuaScriptModule::createContextFor(const scripting::ScriptImpl * source) const
+LuaScriptModule::LuaScriptModule() = default;
+LuaScriptModule::~LuaScriptModule() = default;
+
+std::shared_ptr<scripting::ContextBase> LuaScriptModule::createContextFor(const ScriptImpl * source) const
 {
 	auto ret = std::make_shared<scripting::LuaContext>();
 
 	ret->loadScript(source);
 
 	return ret;
+
+}
 
 }

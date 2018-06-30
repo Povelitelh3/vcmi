@@ -12,12 +12,23 @@
 #include "IGameEventsReceiver.h"
 #include "ScriptHandler.h"
 
-class CScriptingModule
+namespace scripting
+{
+
+class DLL_LINKAGE ContextBase : public Context
 {
 public:
-	CScriptingModule(){}
-	virtual ~CScriptingModule(){}
-
-    virtual std::shared_ptr<scripting::Context> createContextFor(const scripting::ScriptImpl * source) const = 0;
+	ContextBase();
+	virtual ~ContextBase();
 };
 
+class DLL_LINKAGE Module
+{
+public:
+	Module();
+	virtual ~Module();
+
+    virtual std::shared_ptr<ContextBase> createContextFor(const ScriptImpl * source) const = 0;
+};
+
+}

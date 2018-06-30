@@ -33,7 +33,12 @@ void LuaContext::init(const IGameInfoCallback * cb, const CBattleInfoCallback * 
 	icb = cb;
 	bicb = battleCb;
 
-	/*int ret = */ lua_pcall(L, 0, 0, 0);
+	int ret = lua_pcall(L, 0, 0, 0);
+
+	if(ret)
+	{
+		logMod->error("Script failed to run, error: ", lua_tostring(L, -1));
+	}
 }
 
 void LuaContext::giveActionCB(IGameEventRealizer * cb)
@@ -43,7 +48,12 @@ void LuaContext::giveActionCB(IGameEventRealizer * cb)
 
 void LuaContext::loadScript(const ScriptImpl * source)
 {
-	/*int ret = */luaL_loadbuffer(L, source->sourceText.c_str(), source->sourceText.size(), source->sourcePath.c_str());
+	int ret = luaL_loadbuffer(L, source->sourceText.c_str(), source->sourceText.size(), source->sourcePath.c_str());
+
+	if(ret)
+	{
+		logMod->error("Script %s failed to load, error: ", source->identifier, lua_tostring(L, -1));
+	}
 }
 
 JsonNode LuaContext::callGlobal(const std::string & name, const JsonNode & parameters)

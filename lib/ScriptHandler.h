@@ -15,15 +15,14 @@
 
 class JsonNode;
 class JsonSerializeFormat;
-class CScriptingModule;
 
 namespace scripting
 {
-
+class Module;
 class ScriptImpl;
 class ScriptHandler;
 
-using ModulePtr = std::shared_ptr<CScriptingModule>;
+using ModulePtr = std::shared_ptr<Module>;
 using ScriptPtr = std::shared_ptr<ScriptImpl>;
 using ScriptMap = std::map<std::string, ScriptPtr>;
 

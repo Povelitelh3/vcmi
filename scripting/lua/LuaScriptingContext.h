@@ -13,11 +13,12 @@
 #include <lua.hpp>
 
 #include "../../lib/ScriptHandler.h"
+#include "../../lib/CScriptingModule.h"
 
 namespace scripting
 {
 
-class LuaContext : public Context
+class LuaContext : public ContextBase
 {
 public:
 	LuaContext();

@@ -12,14 +12,19 @@
 
 #include "../../lib/CScriptingModule.h"
 
-class LuaScriptModule : public CScriptingModule
+namespace scripting
+{
+
+class LuaScriptModule : public Module
 {
 public:
 	LuaScriptModule();
 	virtual ~LuaScriptModule();
 
-	std::shared_ptr<scripting::Context> createContextFor(const scripting::ScriptImpl * source) const override;
+	std::shared_ptr<ContextBase> createContextFor(const ScriptImpl * source) const override;
 
 
 private:
 };
+
+}

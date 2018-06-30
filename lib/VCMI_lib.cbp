@@ -165,6 +165,7 @@
 		<Unit filename="CPlayerState.h" />
 		<Unit filename="CRandomGenerator.cpp" />
 		<Unit filename="CRandomGenerator.h" />
+		<Unit filename="CScriptingModule.cpp" />
 		<Unit filename="CScriptingModule.h" />
 		<Unit filename="CSkillHandler.cpp" />
 		<Unit filename="CSkillHandler.h" />
