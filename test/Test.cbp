@@ -88,8 +88,6 @@
 		<Unit filename="battle/CUnitStateMagicTest.cpp" />
 		<Unit filename="battle/CUnitStateTest.cpp" />
 		<Unit filename="battle/battle_UnitTest.cpp" />
-		<Unit filename="erm/ERMFixture.cpp" />
-		<Unit filename="erm/ERMFixture.h" />
 		<Unit filename="erm/ERMSpellEffectTest.cpp" />
 		<Unit filename="erm/ExamplesTest.cpp" />
 		<Unit filename="erm/SpellEffectAPITest.cpp" />
@@ -127,6 +125,9 @@
 		<Unit filename="mock/mock_spells_effects_Registry.h" />
 		<Unit filename="mock/mock_vstd_RNG.h" />
 		<Unit filename="rmg/CRmgTemplateTest.cpp" />
+		<Unit filename="scripting/LuaSpellEffectAPITest.cpp" />
+		<Unit filename="scripting/ScriptFixture.cpp" />
+		<Unit filename="scripting/ScriptFixture.h" />
 		<Unit filename="spells/AbilityCasterTest.cpp" />
 		<Unit filename="spells/TargetConditionTest.cpp" />
 		<Unit filename="spells/effects/CatapultTest.cpp" />
@@ -156,6 +157,7 @@
 		<Unit filename="testdata/erm/SpellEffectAPITest.verm" />
 		<Unit filename="testdata/erm/std.verm" />
 		<Unit filename="testdata/erm/testy.erm" />
+		<Unit filename="testdata/lua/SpellEffectAPITest.lua" />
 		<Unit filename="testdata/rmg/1.json" />
 		<Extensions>
 			<code_completion />

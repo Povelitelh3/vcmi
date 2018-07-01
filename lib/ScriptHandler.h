@@ -12,6 +12,7 @@
 
 #include "ScriptingService.h"
 #include "IHandlerBase.h"
+#include "JsonNode.h"
 
 class JsonNode;
 class JsonSerializeFormat;

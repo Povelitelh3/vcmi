@@ -2,7 +2,7 @@ VERM
 
 !?PI;
 
-; make effect work only if hero has expert level in spell school
+; make effect work only on expert level
 
 ![defun applicable []
 	[if [>= effect-level 3] 1 0]

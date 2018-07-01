@@ -9,7 +9,7 @@
  */
 #include "StdInc.h"
 
-#include "ERMFixture.h"
+#include "../scripting/ScriptFixture.h"
 #include "../../lib/VCMI_Lib.h"
 #include "../../lib/ScriptHandler.h"
 #include "../../lib/NetPacks.h"
@@ -24,13 +24,13 @@ namespace test
 using namespace ::testing;
 using namespace ::scripting;
 
-class ExamplesTest : public Test, public ERMFixture
+class ExamplesTest : public Test, public ScriptFixture
 {
 public:
 	std::vector<std::string> actualTexts;
 
 	ExamplesTest()
-		: ERMFixture()
+		: ScriptFixture()
 	{
 	}
 
@@ -53,7 +53,7 @@ public:
 protected:
 	void SetUp() override
 	{
-		ERMFixture::setUp();
+		ScriptFixture::setUp();
 	}
 };
 

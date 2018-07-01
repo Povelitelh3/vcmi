@@ -67,6 +67,8 @@
 		<Unit filename="LuaScriptModule.h" />
 		<Unit filename="LuaScriptingContext.cpp" />
 		<Unit filename="LuaScriptingContext.h" />
+		<Unit filename="LuaSpellEffect.cpp" />
+		<Unit filename="LuaSpellEffect.h" />
 		<Unit filename="StdInc.h">
 			<Option compile="1" />
 			<Option weight="0" />

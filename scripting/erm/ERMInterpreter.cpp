@@ -27,9 +27,6 @@ using namespace VERMInterpreter;
 typedef int TUnusedType;
 
 
-//ERMInterpreter *erm;
-//Environment *topDyn;
-
 namespace ERMPrinter
 {
 	//console printer

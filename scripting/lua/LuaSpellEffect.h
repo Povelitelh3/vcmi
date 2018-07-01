@@ -1,5 +1,5 @@
 /*
- * ERMSpellEffect.h, part of VCMI engine
+ * LuaSpellEffect.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -27,11 +27,11 @@ namespace effects
 using ::scripting::Script;
 using ::scripting::Context;
 
-class ERMSpellEffectFactory : public IEffectFactory
+class LuaSpellEffectFactory : public IEffectFactory
 {
 public:
-	ERMSpellEffectFactory(const Script * script_);
-	virtual ~ERMSpellEffectFactory();
+	LuaSpellEffectFactory(const Script * script_);
+	virtual ~LuaSpellEffectFactory();
 
 	virtual Effect * create() const override;
 
@@ -39,11 +39,11 @@ private:
 	const Script * script;
 };
 
-class ERMSpellEffect : public Effect
+class LuaSpellEffect : public Effect
 {
 public:
-	ERMSpellEffect(const Script * script_);
-	virtual ~ERMSpellEffect();
+	LuaSpellEffect(const Script * script_);
+	virtual ~LuaSpellEffect();
 
 	void adjustTargetTypes(std::vector<TargetType> & types) const override;
 

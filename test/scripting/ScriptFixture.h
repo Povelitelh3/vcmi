@@ -1,5 +1,5 @@
 /*
- * ERMFixture.h, part of VCMI engine
+ * ScriptFixture.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -32,7 +32,7 @@ namespace test
 using namespace ::testing;
 using namespace ::scripting;
 
-class ERMFixture
+class ScriptFixture
 {
 public:
 	class BattleFake : public CBattleInfoCallback, public BattleStateMock
@@ -56,8 +56,8 @@ public:
 	StrictMock<IGameInfoCallbackMock> infoMock;
 	StrictMock<IGameEventRealizerMock> applierMock;
 
-	ERMFixture();
-	virtual ~ERMFixture();
+	ScriptFixture();
+	virtual ~ScriptFixture();
 
 	void loadScript(const JsonNode & scriptConfig);
 protected:

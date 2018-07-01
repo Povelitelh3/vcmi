@@ -1,5 +1,5 @@
 /*
- * ERMFixture.cpp, part of VCMI engine
+ * ScriptFixture.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -9,37 +9,37 @@
  */
 #include "StdInc.h"
 
-#include "ERMFixture.h"
+#include "ScriptFixture.h"
 
 namespace test
 {
 
-ERMFixture::BattleFake::BattleFake(std::shared_ptr<PoolMock> pool_)
+ScriptFixture::BattleFake::BattleFake(std::shared_ptr<PoolMock> pool_)
 	: CBattleInfoCallback(),
 	BattleStateMock(),
 	pool(pool_)
 {
 }
 
-void ERMFixture::BattleFake::setUp()
+void ScriptFixture::BattleFake::setUp()
 {
 	CBattleInfoCallback::setBattle(this);
 }
 
-Pool * ERMFixture::BattleFake::getContextPool() const
+Pool * ScriptFixture::BattleFake::getContextPool() const
 {
 	return pool.get();
 }
 
 
-ERMFixture::ERMFixture()
+ScriptFixture::ScriptFixture()
 {
 	//ctor
 }
 
-ERMFixture::~ERMFixture() = default;
+ScriptFixture::~ScriptFixture() = default;
 
-void ERMFixture::loadScript(const JsonNode & scriptConfig)
+void ScriptFixture::loadScript(const JsonNode & scriptConfig)
 {
 	subject = VLC->scriptHandler->loadFromJson(scriptConfig, "test");
 
@@ -50,7 +50,7 @@ void ERMFixture::loadScript(const JsonNode & scriptConfig)
 	EXPECT_CALL(*pool, getContext(_)).WillRepeatedly(Return(context));
 }
 
-void ERMFixture::setUp()
+void ScriptFixture::setUp()
 {
 	pool = std::make_shared<PoolMock>();
 

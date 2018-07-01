@@ -1,5 +1,5 @@
 /*
- * SpellEffectAPITest.cpp, part of VCMI engine
+ * LuaSpellEffectAPITest.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -9,7 +9,7 @@
  */
 #include "StdInc.h"
 
-#include "../scripting/ScriptFixture.h"
+#include "ScriptFixture.h"
 
 namespace test
 {
@@ -17,7 +17,7 @@ namespace test
 using namespace ::testing;
 using namespace ::scripting;
 
-class SpellEffectAPITest : public Test, public ScriptFixture
+class LuaSpellEffectAPITest : public Test, public ScriptFixture
 {
 public:
 
@@ -29,55 +29,55 @@ protected:
 	}
 };
 
-TEST_F(SpellEffectAPITest, ApplicableOnExpert)
+TEST_F(LuaSpellEffectAPITest, ApplicableOnExpert)
 {
 	JsonNode scriptConfig(JsonNode::JsonType::DATA_STRUCT);
 
-	scriptConfig["source"].String() = "test/erm/SpellEffectAPITest.verm";
+	scriptConfig["source"].String() = "test/lua/SpellEffectAPITest.lua";
 
 	loadScript(scriptConfig);
 
-	context->setGlobal("effect-level", 3);
+	context->setGlobal("effectLevel", 3);
 
 	JsonNode params;
 
 	JsonNode ret = context->callGlobal("applicable", params);
 
-	JsonNode expected = JsonUtils::intNode(1);
+	JsonNode expected = JsonUtils::boolNode(true);
 
 	JsonComparer cmp(false);
 	cmp.compare("applicable result", ret, expected);
 
 }
 
-TEST_F(SpellEffectAPITest, NotApplicableOnAdvanced)
+TEST_F(LuaSpellEffectAPITest, NotApplicableOnAdvanced)
 {
 	JsonNode scriptConfig(JsonNode::JsonType::DATA_STRUCT);
 
-	scriptConfig["source"].String() = "test/erm/SpellEffectAPITest.verm";
+	scriptConfig["source"].String() = "test/lua/SpellEffectAPITest.lua";
 	loadScript(scriptConfig);
 
-	context->setGlobal("effect-level", 2);
+	context->setGlobal("effectLevel", 2);
 
 	JsonNode params;
 
 	JsonNode ret = context->callGlobal("applicable", params);
 
-	JsonNode expected = JsonUtils::intNode(0);
+	JsonNode expected = JsonUtils::boolNode(false);
 
 	JsonComparer cmp(false);
 	cmp.compare("applicable result", ret, expected);
 
 }
 
-TEST_F(SpellEffectAPITest, ApplicableOnLeftSideOfField)
+TEST_F(LuaSpellEffectAPITest, ApplicableOnLeftSideOfField)
 {
 	JsonNode scriptConfig(JsonNode::JsonType::DATA_STRUCT);
 
-	scriptConfig["source"].String() = "test/erm/SpellEffectAPITest.verm";
+	scriptConfig["source"].String() = "test/lua/SpellEffectAPITest.lua";
 	loadScript(scriptConfig);
 
-	context->setGlobal("effect-level", 1);
+	context->setGlobal("effectLevel", 1);
 
 	JsonNode params;
 
@@ -94,20 +94,20 @@ TEST_F(SpellEffectAPITest, ApplicableOnLeftSideOfField)
 
 	JsonNode ret = context->callGlobal("applicableTarget", params);
 
-	JsonNode expected = JsonUtils::intNode(1);
+	JsonNode expected = JsonUtils::boolNode(true);
 
 	JsonComparer cmp(false);
 	cmp.compare("applicable result", ret, expected);
 }
 
-TEST_F(SpellEffectAPITest, NotApplicableOnRightSideOfField)
+TEST_F(LuaSpellEffectAPITest, NotApplicableOnRightSideOfField)
 {
 	JsonNode scriptConfig(JsonNode::JsonType::DATA_STRUCT);
 
-	scriptConfig["source"].String() = "test/erm/SpellEffectAPITest.verm";
+	scriptConfig["source"].String() = "test/lua/SpellEffectAPITest.lua";
 	loadScript(scriptConfig);
 
-	context->setGlobal("effect-level", 1);
+	context->setGlobal("effectLevel", 1);
 
 	JsonNode params;
 
@@ -124,7 +124,7 @@ TEST_F(SpellEffectAPITest, NotApplicableOnRightSideOfField)
 
 	JsonNode ret = context->callGlobal("applicableTarget", params);
 
-	JsonNode expected = JsonUtils::intNode(0);
+	JsonNode expected = JsonUtils::boolNode(false);
 
 	JsonComparer cmp(false);
 	cmp.compare("applicable result", ret, expected);

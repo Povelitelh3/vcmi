@@ -35,10 +35,16 @@ public:
 	void setGlobal(const std::string & name, const std::string & value) override;
 	void setGlobal(const std::string & name, double value) override;
 
+	void push(const JsonNode & value);
+
+	void pop(JsonNode & value);
+
 protected:
 
 private:
 	lua_State * L;
+
+	const Script * script;
 
 	const IGameInfoCallback * icb;
 	const CBattleInfoCallback * bicb;

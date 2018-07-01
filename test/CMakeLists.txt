@@ -27,16 +27,17 @@ set(test_SRCS
 		battle/CUnitStateMagicTest.cpp
 		battle/battle_UnitTest.cpp
 
-		erm/ERMFixture.cpp
 		erm/ExamplesTest.cpp
 		erm/SpellEffectAPITest.cpp
 		erm/ERMSpellEffectTest.cpp
 
- 		game/CGameStateTest.cpp
+		game/CGameStateTest.cpp
 
- 		map/CMapEditManagerTest.cpp
- 		map/CMapFormatTest.cpp
- 		map/MapComparer.cpp
+		map/CMapEditManagerTest.cpp
+		map/CMapFormatTest.cpp
+		map/MapComparer.cpp
+
+		scripting/ScriptFixture.cpp
 
 		spells/AbilityCasterTest.cpp
  		spells/TargetConditionTest.cpp
@@ -76,7 +77,7 @@ set(test_HEADERS
  		CVcmiTestConfig.h
 		JsonComparer.h
 
-		erm/ERMFixture.h
+		scripting/ScriptFixture.h
 
  		map/MapComparer.h
 
