@@ -28,8 +28,6 @@ set(test_SRCS
 		battle/battle_UnitTest.cpp
 
 		erm/ExamplesTest.cpp
-		erm/SpellEffectAPITest.cpp
-		erm/ERMSpellEffectTest.cpp
 
 		game/CGameStateTest.cpp
 
@@ -38,6 +36,8 @@ set(test_SRCS
 		map/MapComparer.cpp
 
 		scripting/ScriptFixture.cpp
+		scripting/LuaSpellEffectTest.cpp
+		scripting/LuaSpellEffectAPITest.cpp
 
 		spells/AbilityCasterTest.cpp
  		spells/TargetConditionTest.cpp

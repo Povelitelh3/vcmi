@@ -12,9 +12,6 @@
 
 #include "ERMInterpreter.h"
 
-#include "ERMSpellEffect.h"
-
-
 #ifdef __GNUC__
 #define strcpy_s(a, b, c) strncpy(a, c, b)
 #endif
@@ -47,6 +44,5 @@ std::shared_ptr<scripting::ContextBase> ERMScriptModule::createContextFor(const 
 
 void ERMScriptModule::registerSpellEffect(spells::effects::Registry * registry, const scripting::Script * source) const
 {
-	auto factory = std::make_shared<spells::effects::ERMSpellEffectFactory>(source);
-	registry->add(source->getName(), factory);
+	throw std::runtime_error("ERM spell effect registration is not possible");
 }

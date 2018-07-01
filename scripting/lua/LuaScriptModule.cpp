@@ -11,6 +11,7 @@
 
 #include "LuaScriptModule.h"
 #include "LuaScriptingContext.h"
+#include "LuaSpellEffect.h"
 
 const char *g_cszAiName = "Lua interpreter";
 
@@ -32,17 +33,12 @@ LuaScriptModule::~LuaScriptModule() = default;
 
 std::shared_ptr<scripting::ContextBase> LuaScriptModule::createContextFor(const Script * source) const
 {
-	auto ret = std::make_shared<scripting::LuaContext>();
-
-	ret->loadScript(source);
-
-	return ret;
-
+	return std::make_shared<scripting::LuaContext>(source);
 }
 
 void LuaScriptModule::registerSpellEffect(spells::effects::Registry * registry, const Script * source) const
 {
-	throw std::runtime_error("registerSpellEffect is not implemented");
+	registry->add(source->getName(), std::make_shared<spells::effects::LuaSpellEffectFactory>(source));
 }
 
 

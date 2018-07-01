@@ -21,13 +21,11 @@ namespace scripting
 class LuaContext : public ContextBase
 {
 public:
-	LuaContext();
+	LuaContext(const Script * source);
 	virtual ~LuaContext();
 
 	void init(const IGameInfoCallback * cb, const CBattleInfoCallback * battleCb) override;
 	void giveActionCB(IGameEventRealizer * cb) override;
-
-	void loadScript(const Script * source);
 
 	JsonNode callGlobal(const std::string & name, const JsonNode & parameters) override;
 

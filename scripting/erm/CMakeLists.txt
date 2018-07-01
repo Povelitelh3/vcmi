@@ -5,7 +5,6 @@ set(lib_SRCS
 		ERMParser.cpp
 		ERMInterpreter.cpp
 		ERMScriptModule.cpp
-		ERMSpellEffect.cpp
 )
 
 add_library(vcmiERM SHARED ${lib_SRCS})

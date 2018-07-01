@@ -1,5 +1,5 @@
 /*
- * ERMSpellEffectTest.cpp, part of VCMI engine
+ * LuaSpellEffectTest.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -27,7 +27,7 @@ using namespace ::spells::effects;
 using namespace ::scripting;
 using namespace ::testing;
 
-class ERMSpellEffectTest : public Test, public EffectFixture
+class LuaSpellEffectTest : public Test, public EffectFixture
 {
 public:
 	const std::string SCRIPT_NAME = "testScript";
@@ -48,7 +48,7 @@ public:
 
 	JsonNode request;
 
-	ERMSpellEffectTest()
+	LuaSpellEffectTest()
 		: EffectFixture("testScript")
 	{
 		contextMock = std::make_shared<ContextMock>();
@@ -57,19 +57,19 @@ public:
 	void expectSettingContextVariables()
 	{
 		EXPECT_CALL(mechanicsMock, getEffectLevel()).WillRepeatedly(Return(EFFECT_LEVEL));
-		EXPECT_CALL(*contextMock, setGlobal(Eq("effect-level"), Matcher<int>(Eq(EFFECT_LEVEL))));
+		EXPECT_CALL(*contextMock, setGlobal(Eq("effectLevel"), Matcher<int>(Eq(EFFECT_LEVEL))));
 
 		EXPECT_CALL(mechanicsMock, getRangeLevel()).WillRepeatedly(Return(RANGE_LEVEL));
-		EXPECT_CALL(*contextMock, setGlobal(Eq("effect-range-level"), Matcher<int>(Eq(RANGE_LEVEL))));
+		EXPECT_CALL(*contextMock, setGlobal(Eq("effectRangeLevel"), Matcher<int>(Eq(RANGE_LEVEL))));
 
 		EXPECT_CALL(mechanicsMock, getEffectPower()).WillRepeatedly(Return(EFFECT_POWER));
-		EXPECT_CALL(*contextMock, setGlobal(Eq("effect-power"), Matcher<int>(Eq(EFFECT_POWER))));
+		EXPECT_CALL(*contextMock, setGlobal(Eq("effectPower"), Matcher<int>(Eq(EFFECT_POWER))));
 
 		EXPECT_CALL(mechanicsMock, getEffectDuration()).WillRepeatedly(Return(EFFECT_DURATION));
-		EXPECT_CALL(*contextMock, setGlobal(Eq("effect-duration"), Matcher<int>(Eq(EFFECT_DURATION))));
+		EXPECT_CALL(*contextMock, setGlobal(Eq("effectDuration"), Matcher<int>(Eq(EFFECT_DURATION))));
 
 		EXPECT_CALL(mechanicsMock, getEffectValue()).WillRepeatedly(Return(EFFECT_VALUE));
-		EXPECT_CALL(*contextMock, setGlobal(Eq("effect-value"), Matcher<int>(Eq(EFFECT_VALUE))));
+		EXPECT_CALL(*contextMock, setGlobal(Eq("effectValue"), Matcher<int>(Eq(EFFECT_VALUE))));
 	}
 
 	void setDefaultExpectations()
@@ -89,7 +89,7 @@ public:
 
 	JsonNode saveRequest(const std::string & name, const JsonNode & parameters)
 	{
-		JsonNode response = JsonUtils::intNode(1);
+		JsonNode response = JsonUtils::boolNode(true);
 
 		request = parameters;
 		return response;
@@ -99,8 +99,8 @@ protected:
 	void SetUp() override
 	{
 		EXPECT_CALL(registryMock, add(Eq(SCRIPT_NAME), _)).WillOnce(SaveArg<1>(&factory));
-		EXPECT_CALL(scriptMock, getName()).WillOnce(ReturnRef(SCRIPT_NAME));
-		VLC->scriptHandler->erm->registerSpellEffect(&registryMock, &scriptMock);
+		EXPECT_CALL(scriptMock, getName()).WillRepeatedly(ReturnRef(SCRIPT_NAME));
+		VLC->scriptHandler->lua->registerSpellEffect(&registryMock, &scriptMock);
 
 		GTEST_ASSERT_NE(factory, nullptr);
 		subject.reset(factory->create());
@@ -109,22 +109,22 @@ protected:
 	}
 };
 
-TEST_F(ERMSpellEffectTest, ApplicableRedirected)
+TEST_F(LuaSpellEffectTest, ApplicableRedirected)
 {
 	setDefaultExpectations();
 
-	JsonNode response = JsonUtils::intNode(1);
+	JsonNode response = JsonUtils::boolNode(true);
 
 	EXPECT_CALL(*contextMock, callGlobal(Eq("applicable"),_)).WillOnce(Return(response));//TODO: check call parameter
 
 	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock));
 }
 
-TEST_F(ERMSpellEffectTest, ApplicableTargetRedirected)
+TEST_F(LuaSpellEffectTest, ApplicableTargetRedirected)
 {
 	setDefaultExpectations();
 
-	EXPECT_CALL(*contextMock, callGlobal(Eq("applicableTarget"),_)).WillOnce(Invoke(this, &ERMSpellEffectTest::saveRequest));
+	EXPECT_CALL(*contextMock, callGlobal(Eq("applicableTarget"),_)).WillOnce(Invoke(this, &LuaSpellEffectTest::saveRequest));
 
 	auto & unit1 = unitsFake.add(BattleSide::ATTACKER);
 

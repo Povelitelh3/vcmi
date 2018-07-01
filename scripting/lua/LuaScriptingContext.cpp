@@ -18,9 +18,16 @@ namespace scripting
 {
 
 
-LuaContext::LuaContext()
+LuaContext::LuaContext(const Script * source)
+	: script(source)
 {
 	L = luaL_newstate();
+
+	luaopen_base(L); //FIXME: disable filesystem access
+
+	luaopen_math(L);
+	luaopen_string(L);
+	luaopen_table(L);
 }
 
 LuaContext::~LuaContext()
@@ -32,8 +39,6 @@ void LuaContext::init(const IGameInfoCallback * cb, const CBattleInfoCallback * 
 {
 	icb = cb;
 	bicb = battleCb;
-
-	luaopen_base(L); //FIXME: disable filesystem access
 
 	int ret = luaL_loadbuffer(L, script->getSource().c_str(), script->getSource().size(), script->getName().c_str());
 
@@ -56,12 +61,7 @@ void LuaContext::init(const IGameInfoCallback * cb, const CBattleInfoCallback * 
 
 void LuaContext::giveActionCB(IGameEventRealizer * cb)
 {
-	acb = cb;
-}
-
-void LuaContext::loadScript(const Script * source)
-{
-	script = source;
+	acb = cb;//todo: clean automatically
 }
 
 JsonNode LuaContext::callGlobal(const std::string & name, const JsonNode & parameters)
