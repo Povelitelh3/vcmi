@@ -47,6 +47,9 @@ public:
 	const scripting::Service * scriptingService() const override;
 	const spells::SpellService * spellService() const override;
 
+	const spells::effects::Registry * spellEffects() const override;
+	spells::effects::Registry * spellEffects() override;
+
 	const IBonusTypeHandler * getBth() const; //deprecated
 
 	CArtHandler * arth;
@@ -71,12 +74,17 @@ public:
 
 	void loadFilesystem(bool onlyEssential);// basic initialization. should be called before init()
 
+	void scriptsLoaded();
 
 	template <typename Handler> void serialize(Handler &h, const int version)
 	{
 		if(version >= 790)
 		{
 			h & scriptHandler;//must be first (or second after modh), it can modify factories other handlers depends on
+			if(!h.saving)
+			{
+				scriptsLoaded();
+			}
 		}
 
 		h & heroh;

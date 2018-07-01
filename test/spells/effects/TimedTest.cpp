@@ -31,6 +31,7 @@ protected:
 	void SetUp() override
 	{
 		EffectFixture::setUp();
+
 	}
 };
 

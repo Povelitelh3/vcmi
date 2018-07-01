@@ -13,6 +13,8 @@
 #include "ERMParser.h"
 #include "ERMScriptModule.h"
 
+#include "../../lib/IGameEventsReceiver.h"
+
 class ERMInterpreter;
 
 namespace VERMInterpreter

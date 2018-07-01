@@ -430,7 +430,6 @@ CContentHandler::CContentHandler()
 
 void CContentHandler::init()
 {
-	handlers.insert(std::make_pair("scripts", ContentTypeHandler(VLC->scriptHandler, "script")));//must be first
  	handlers.insert(std::make_pair("heroClasses", ContentTypeHandler(&VLC->heroh->classes, "heroClass")));
 	handlers.insert(std::make_pair("artifacts", ContentTypeHandler(VLC->arth, "artifact")));
 	handlers.insert(std::make_pair("creatures", ContentTypeHandler(VLC->creh, "creature")));
@@ -440,7 +439,7 @@ void CContentHandler::init()
 	handlers.insert(std::make_pair("spells", ContentTypeHandler(VLC->spellh, "spell")));
 	handlers.insert(std::make_pair("skills", ContentTypeHandler(VLC->skillh, "skill")));
 	handlers.insert(std::make_pair("templates", ContentTypeHandler((IHandlerBase *)VLC->tplh, "template")));
-
+	handlers.insert(std::make_pair("scripts", ContentTypeHandler(VLC->scriptHandler, "script")));
 	//TODO: any other types of moddables?
 }
 
@@ -984,6 +983,8 @@ void CModHandler::load()
 	content.load(coreMod);
 	for(const TModID & modName : activeMods)
 		content.load(allMods[modName]);
+
+	VLC->scriptHandler->performRegistration(VLC);//todo: this should be done before any other handlers load
 
 	content.loadCustom();
 

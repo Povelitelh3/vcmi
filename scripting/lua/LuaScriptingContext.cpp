@@ -46,13 +46,13 @@ void LuaContext::giveActionCB(IGameEventRealizer * cb)
 	acb = cb;
 }
 
-void LuaContext::loadScript(const ScriptImpl * source)
+void LuaContext::loadScript(const Script * source)
 {
-	int ret = luaL_loadbuffer(L, source->sourceText.c_str(), source->sourceText.size(), source->sourcePath.c_str());
+	int ret = luaL_loadbuffer(L, source->getSource().c_str(), source->getSource().size(), source->getName().c_str());
 
 	if(ret)
 	{
-		logMod->error("Script %s failed to load, error: ", source->identifier, lua_tostring(L, -1));
+		logMod->error("Script %s failed to load, error: ", source->getName(), lua_tostring(L, -1));
 	}
 }
 

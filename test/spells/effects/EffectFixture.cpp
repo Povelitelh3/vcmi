@@ -127,15 +127,25 @@ EffectFixture::~EffectFixture() = default;
 
 void EffectFixture::setupEffect(const JsonNode & effectConfig)
 {
+	subject = Effect::create(GlobalRegistry::get(), effectName);
+	ASSERT_TRUE(subject);
+
 	JsonDeserializer deser(nullptr, effectConfig);
 	subject->serializeJson(deser);
 }
 
-void EffectFixture::setUp()
+void EffectFixture::setupEffect(Registry * registry, const JsonNode & effectConfig)
 {
-	subject = Effect::create(effectName);
+	subject = Effect::create(registry, effectName);
 	ASSERT_TRUE(subject);
 
+	JsonDeserializer deser(nullptr, effectConfig);
+	subject->serializeJson(deser);
+}
+
+
+void EffectFixture::setUp()
+{
 	pool = std::make_shared<PoolMock>();
 
 	battleFake = std::make_shared<BattleFake>(pool);

@@ -20,6 +20,7 @@
 #include "CTownHandler.h"
 #include "CBuildingHandler.h"
 #include "spells/CSpellHandler.h"
+#include "spells/effects/Registry.h"
 #include "CSkillHandler.h"
 #include "CGeneralTextHandler.h"
 #include "CModHandler.h"
@@ -72,6 +73,16 @@ const spells::SpellService * LibClasses::spellService() const
 const IBonusTypeHandler * LibClasses::getBth() const
 {
 	return bth;
+}
+
+const spells::effects::Registry * LibClasses::spellEffects() const
+{
+	return spells::effects::GlobalRegistry::get();
+}
+
+spells::effects::Registry * LibClasses::spellEffects()
+{
+	return spells::effects::GlobalRegistry::get();
 }
 
 void LibClasses::loadFilesystem(bool onlyEssential)
@@ -200,6 +211,11 @@ void LibClasses::callWhenDeserializing()
 	//arth->load(true);
 	//modh->recreateHandlers();
 	//modh->loadConfigFromFile ("defaultMods"); //TODO: remember last saved config
+}
+
+void LibClasses::scriptsLoaded()
+{
+	scriptHandler->performRegistration(this);
 }
 
 LibClasses::~LibClasses()

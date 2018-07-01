@@ -83,6 +83,8 @@
 		<Unit filename="ERMParser.h" />
 		<Unit filename="ERMScriptModule.cpp" />
 		<Unit filename="ERMScriptModule.h" />
+		<Unit filename="ERMSpellEffect.cpp" />
+		<Unit filename="ERMSpellEffect.h" />
 		<Unit filename="StdInc.h">
 			<Option compile="1" />
 			<Option weight="0" />

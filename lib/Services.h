@@ -16,6 +16,11 @@ class ScriptingService;
 namespace spells
 {
 	class SpellService;
+
+	namespace effects
+	{
+		class Registry;
+	}
 }
 
 namespace scripting
@@ -31,4 +36,6 @@ public:
 	virtual const CreatureService * creatureService() const = 0;
 	virtual const scripting::Service * scriptingService() const = 0;
 	virtual const spells::SpellService * spellService() const = 0;
+	virtual const spells::effects::Registry * spellEffects() const = 0;
+	virtual spells::effects::Registry * spellEffects() = 0;
 };

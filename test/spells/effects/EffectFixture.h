@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../../../lib/spells/effects/Effect.h"
+#include "../../../lib/spells/effects/Registry.h"
 
 #include "../../mock/mock_spells_Mechanics.h"
 #include "../../mock/mock_spells_Problem.h"
@@ -112,6 +113,7 @@ public:
 	virtual ~EffectFixture();
 
 	void setupEffect(const JsonNode & effectConfig);
+	void setupEffect(Registry * registry, const JsonNode & effectConfig);
 
 	void setupDefaultRNG();
 

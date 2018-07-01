@@ -9,8 +9,16 @@
  */
 #pragma once
 
-#include "IGameEventsReceiver.h"
 #include "ScriptHandler.h"
+
+namespace spells
+{
+	namespace effects
+	{
+		class Registry;
+	}
+}
+
 
 namespace scripting
 {
@@ -28,7 +36,9 @@ public:
 	Module();
 	virtual ~Module();
 
-    virtual std::shared_ptr<ContextBase> createContextFor(const ScriptImpl * source) const = 0;
+	virtual std::shared_ptr<ContextBase> createContextFor(const Script * source) const = 0;
+
+	virtual void registerSpellEffect(spells::effects::Registry * registry, const Script * source) const = 0;
 };
 
 }

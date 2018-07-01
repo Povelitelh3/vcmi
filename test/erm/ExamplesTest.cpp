@@ -37,7 +37,7 @@ public:
 	void setDefaultExpectaions()
 	{
 		EXPECT_CALL(infoMock, getLocalPlayer()).WillRepeatedly(Return(PlayerColor(3)));
-		EXPECT_CALL(applierMock, commitPackage(_)).Times(AtLeast(1)).WillRepeatedly(Invoke(this, &onCommit));
+		EXPECT_CALL(applierMock, commitPackage(_)).Times(AtLeast(1)).WillRepeatedly(Invoke(this, &ExamplesTest::onCommit));
 	}
 
 	void onCommit(CPackForClient * pack)

@@ -1,5 +1,5 @@
 /*
- * Custom.h, part of VCMI engine
+ * ERMSpellEffect.h, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -10,7 +10,8 @@
 
 #pragma once
 
-#include "Effect.h"
+#include "../../lib/spells/effects/Effect.h"
+#include "../../lib/spells/effects/Registry.h"
 
 namespace scripting
 {
@@ -23,11 +24,26 @@ namespace spells
 namespace effects
 {
 
-class Custom : public Effect
+using ::scripting::Script;
+using ::scripting::Context;
+
+class ERMSpellEffectFactory : public IEffectFactory
 {
 public:
-	Custom();
-	virtual ~Custom();
+	ERMSpellEffectFactory(const Script * script_);
+	virtual ~ERMSpellEffectFactory();
+
+	virtual Effect * create() const override;
+
+private:
+	const Script * script;
+};
+
+class ERMSpellEffect : public Effect
+{
+public:
+	ERMSpellEffect(const Script * script_);
+	virtual ~ERMSpellEffect();
 
 	void adjustTargetTypes(std::vector<TargetType> & types) const override;
 
@@ -46,11 +62,11 @@ protected:
 	void serializeJsonEffect(JsonSerializeFormat & handler) override;
 
 private:
-	std::string scriptName;
+	const Script * script;
 
-	std::shared_ptr<scripting::Context> resolveScript(const Mechanics * m) const;
+	std::shared_ptr<Context> resolveScript(const Mechanics * m) const;
 
-	void setContextVariables(const Mechanics * m, std::shared_ptr<scripting::Context> context) const;
+	void setContextVariables(const Mechanics * m, std::shared_ptr<Context> context) const;
 };
 
 } // namespace effects

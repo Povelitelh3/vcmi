@@ -18,8 +18,7 @@ namespace scripting
 class ServiceMock : public Service
 {
 public:
-
-	MOCK_CONST_METHOD1(resolveScript, const Script *(const std::string &));
+	MOCK_CONST_METHOD1(performRegistration, void(Services * ));
 };
 
 }

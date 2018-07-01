@@ -30,7 +30,7 @@ namespace scripting
 LuaScriptModule::LuaScriptModule() = default;
 LuaScriptModule::~LuaScriptModule() = default;
 
-std::shared_ptr<scripting::ContextBase> LuaScriptModule::createContextFor(const ScriptImpl * source) const
+std::shared_ptr<scripting::ContextBase> LuaScriptModule::createContextFor(const Script * source) const
 {
 	auto ret = std::make_shared<scripting::LuaContext>();
 
@@ -39,5 +39,11 @@ std::shared_ptr<scripting::ContextBase> LuaScriptModule::createContextFor(const 
 	return ret;
 
 }
+
+void LuaScriptModule::registerSpellEffect(spells::effects::Registry * registry, const Script * source) const
+{
+	throw std::runtime_error("registerSpellEffect is not implemented");
+}
+
 
 }

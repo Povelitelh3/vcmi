@@ -30,6 +30,7 @@
 #include "BattleSpellMechanics.h"
 
 #include "effects/Effects.h"
+#include "effects/Registry.h"
 #include "effects/Damage.h"
 #include "effects/Timed.h"
 
@@ -71,7 +72,7 @@ protected:
 	void loadEffects(const JsonNode & config, const int level)
 	{
 		JsonDeserializer deser(nullptr, config);
-		effects->serializeJson(deser, level);
+		effects->serializeJson(VLC->spellEffects(), deser, level);
 	}
 private:
 	std::shared_ptr<TargetCondition> targetCondition;

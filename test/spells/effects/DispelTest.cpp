@@ -121,6 +121,7 @@ TEST_F(DispelTest, IgnoresOwnEffects)
 
 TEST_F(DispelTest, NotApplicableToUnitWithNoTimedEffect)
 {
+	EffectFixture::setupEffect(JsonNode());
 	auto & unit = unitsFake.add(BattleSide::ATTACKER);
 
 	EXPECT_CALL(unit, isValidTarget(Eq(false))).Times(AtMost(1)).WillRepeatedly(Return(true));
@@ -138,6 +139,7 @@ TEST_F(DispelTest, NotApplicableToUnitWithNoTimedEffect)
 
 TEST_F(DispelTest, NotApplicableToDeadUnit)
 {
+	EffectFixture::setupEffect(JsonNode());
 	auto & unit = unitsFake.add(BattleSide::ATTACKER);
 
 	EXPECT_CALL(unit, isValidTarget(Eq(false))).Times(AtMost(1)).WillRepeatedly(Return(false));

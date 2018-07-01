@@ -31,6 +31,7 @@ protected:
 	void SetUp() override
 	{
 		EffectFixture::setUp();
+		setupEffect(JsonNode());
 	}
 };
 
@@ -46,6 +47,7 @@ protected:
 	void SetUp() override
 	{
 		EffectFixture::setUp();
+		setupEffect(JsonNode());
 	}
 };
 

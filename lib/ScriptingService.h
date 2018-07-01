@@ -10,6 +10,7 @@
 
 #pragma once
 
+class Services;
 class JsonNode;
 class IGameInfoCallback;
 class IGameEventRealizer;
@@ -38,6 +39,9 @@ class DLL_LINKAGE Script
 public:
 	virtual ~Script() = default;
 
+	virtual const std::string & getName() const = 0;
+	virtual const std::string & getSource() const = 0;
+
 	virtual std::shared_ptr<Context> createContext() const = 0;
 };
 
@@ -46,7 +50,7 @@ class DLL_LINKAGE Service
 public:
 	virtual ~Service() = default;
 
-	virtual const Script * resolveScript(const std::string & name) const = 0;
+	virtual void performRegistration(Services * services) const = 0;
 };
 
 class DLL_LINKAGE Pool

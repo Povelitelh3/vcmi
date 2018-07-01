@@ -15,6 +15,7 @@
 
 class JsonNode;
 class JsonSerializeFormat;
+class Services;
 
 namespace scripting
 {
@@ -29,6 +30,13 @@ using ScriptMap = std::map<std::string, ScriptPtr>;
 class DLL_LINKAGE ScriptImpl : public Script
 {
 public:
+	enum class Implements
+	{
+		ANYTHING,
+		BATTLE_EFFECT
+		//todo: adventure effect, map object(unified with building), server query, client query(with gui), may be smth else
+	};
+
 	std::string identifier;
 	std::string sourcePath;
 	std::string sourceText;
@@ -42,8 +50,13 @@ public:
 	void serializeJsonState(JsonSerializeFormat & handler);
 
 	std::shared_ptr<Context> createContext() const override;
+	const std::string & getName() const override;
+	const std::string & getSource() const override;
+
+	void performRegistration(::Services * services) const;
 private:
 	const ScriptHandler * owner;
+	Implements implements;
 
 	void resolveHost();
 };
@@ -62,7 +75,7 @@ public:
 	ScriptHandler();
 	virtual ~ScriptHandler();
 
-	const Script * resolveScript(const std::string & name) const override;
+	const Script * resolveScript(const std::string & name) const;
 
 	std::vector<bool> getDefaultAllowed() const override;
 	std::vector<JsonNode> loadLegacyData(size_t dataSize) override;
@@ -72,6 +85,7 @@ public:
 	void loadObject(std::string scope, std::string name, const JsonNode & data) override;
 	void loadObject(std::string scope, std::string name, const JsonNode & data, size_t index) override;
 
+	void performRegistration(Services * services) const override;
 
 	template <typename Handler> void serialize(Handler & h, const int version)
 	{
@@ -85,13 +99,13 @@ public:
 			loadState(state);
 	}
 
+	ModulePtr erm;
+	ModulePtr lua;
+
 protected:
 
 private:
 	friend class ScriptImpl;
-
-	ModulePtr erm;
-	ModulePtr lua;
 
 	ScriptMap objects;
 

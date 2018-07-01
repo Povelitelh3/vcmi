@@ -1,5 +1,5 @@
 /*
- * CustomTest.cpp, part of VCMI engine
+ * ERMSpellEffectTest.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -9,12 +9,16 @@
  */
 #include "StdInc.h"
 
-#include "EffectFixture.h"
-#include "../../JsonComparer.h"
+#include "../spells/effects/EffectFixture.h"
+#include "../JsonComparer.h"
 
-#include "../../mock/mock_scripting_Context.h"
-#include "../../mock/mock_scripting_Script.h"
-#include "../../mock/mock_scripting_Service.h"
+#include "../mock/mock_scripting_Context.h"
+#include "../mock/mock_scripting_Script.h"
+#include "../mock/mock_scripting_Service.h"
+#include "../mock/mock_spells_effects_Registry.h"
+#include "../../../lib/VCMI_Lib.h"
+#include "../../../lib/ScriptHandler.h"
+#include "../../../lib/CScriptingModule.h"
 
 namespace test
 {
@@ -23,7 +27,7 @@ using namespace ::spells::effects;
 using namespace ::scripting;
 using namespace ::testing;
 
-class CustomTest : public Test, public EffectFixture
+class ERMSpellEffectTest : public Test, public EffectFixture
 {
 public:
 	const std::string SCRIPT_NAME = "testScript";
@@ -37,11 +41,15 @@ public:
 	ServiceMock serviceMock;
 	ScriptMock scriptMock;
 	std::shared_ptr<ContextMock> contextMock;
+	EffectFactoryMock factoryMock;
+
+	RegistryMock registryMock;
+	RegistryMock::FactoryPtr factory;
 
 	JsonNode request;
 
-	CustomTest()
-		: EffectFixture("core:custom")
+	ERMSpellEffectTest()
+		: EffectFixture("testScript")
 	{
 		contextMock = std::make_shared<ContextMock>();
 	}
@@ -68,17 +76,15 @@ public:
 	{
 		EXPECT_CALL(mechanicsMock, scriptingService()).WillRepeatedly(Return(&serviceMock));
 
-		EXPECT_CALL(serviceMock, resolveScript(Eq(SCRIPT_NAME))).WillOnce(Return(&scriptMock));
-
 		EXPECT_CALL(*pool, getContext(Eq(&scriptMock))).WillOnce(Return(contextMock));
 
 		EXPECT_CALL(*contextMock, init(_,_)).Times(1);//???
 
 		expectSettingContextVariables();
 
-		JsonNode options(JsonNode::JsonType::DATA_STRUCT);
-		options["script"].String() = SCRIPT_NAME;
-		EffectFixture::setupEffect(options);
+//		JsonNode options(JsonNode::JsonType::DATA_STRUCT);
+//		//TODO: test passing configuration
+//		EffectFixture::setupEffect(options);
 	}
 
 	JsonNode saveRequest(const std::string & name, const JsonNode & parameters)
@@ -92,11 +98,18 @@ public:
 protected:
 	void SetUp() override
 	{
+		EXPECT_CALL(registryMock, add(Eq(SCRIPT_NAME), _)).WillOnce(SaveArg<1>(&factory));
+		EXPECT_CALL(scriptMock, getName()).WillOnce(ReturnRef(SCRIPT_NAME));
+		VLC->scriptHandler->erm->registerSpellEffect(&registryMock, &scriptMock);
+
+		GTEST_ASSERT_NE(factory, nullptr);
+		subject.reset(factory->create());
+
 		EffectFixture::setUp();
 	}
 };
 
-TEST_F(CustomTest, ApplicableRedirected)
+TEST_F(ERMSpellEffectTest, ApplicableRedirected)
 {
 	setDefaultExpectations();
 
@@ -107,11 +120,11 @@ TEST_F(CustomTest, ApplicableRedirected)
 	EXPECT_TRUE(subject->applicable(problemMock, &mechanicsMock));
 }
 
-TEST_F(CustomTest, ApplicableTargetRedirected)
+TEST_F(ERMSpellEffectTest, ApplicableTargetRedirected)
 {
 	setDefaultExpectations();
 
-	EXPECT_CALL(*contextMock, callGlobal(Eq("applicableTarget"),_)).WillOnce(Invoke(this, &saveRequest));
+	EXPECT_CALL(*contextMock, callGlobal(Eq("applicableTarget"),_)).WillOnce(Invoke(this, &ERMSpellEffectTest::saveRequest));
 
 	auto & unit1 = unitsFake.add(BattleSide::ATTACKER);
 

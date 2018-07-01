@@ -13,17 +13,25 @@
 
 #include "CGameInterface.h"
 #include "CScriptingModule.h"
+#include "Services.h"
 #include "VCMIDirs.h"
 #include "serializer/JsonDeserializer.h"
 #include "serializer/JsonSerializer.h"
 #include "filesystem/Filesystem.h"
+
+static const std::vector<std::string> IMPLEMENTS_MAP =
+{
+	"ANYTHING",
+	"BATTLE_EFFECT"
+};
 
 namespace scripting
 {
 
 ScriptImpl::ScriptImpl(const ScriptHandler * owner_)
 	:owner(owner_),
-	host()
+	host(),
+	implements(Implements::ANYTHING)
 {
 
 }
@@ -35,9 +43,32 @@ std::shared_ptr<Context> ScriptImpl::createContext() const
 	return host->createContextFor(this);
 }
 
+const std::string & ScriptImpl::getName() const
+{
+	return identifier;
+}
+
+const std::string & ScriptImpl::getSource() const
+{
+	return sourceText;
+}
+
+void ScriptImpl::performRegistration(::Services * services) const
+{
+	switch(implements)
+	{
+	case Implements::ANYTHING:
+		break;
+	case Implements::BATTLE_EFFECT:
+		host->registerSpellEffect(services->spellEffects(), this);
+		break;
+	}
+}
+
 void ScriptImpl::serializeJson(JsonSerializeFormat & handler)
 {
 	handler.serializeString("source", sourcePath);
+	handler.serializeEnum("implements", implements, Implements::ANYTHING, IMPLEMENTS_MAP);
 
 	if(!handler.saving)
 	{
@@ -55,6 +86,7 @@ void ScriptImpl::serializeJsonState(JsonSerializeFormat & handler)
 {
 	handler.serializeString("sourcePath", sourcePath);
 	handler.serializeString("sourceText", sourceText);
+	handler.serializeEnum("implements", implements, Implements::ANYTHING, IMPLEMENTS_MAP);
 
 	if(!handler.saving)
 	{
@@ -145,6 +177,15 @@ void ScriptHandler::loadObject(std::string scope, std::string name, const JsonNo
 void ScriptHandler::loadObject(std::string scope, std::string name, const JsonNode & data, size_t index)
 {
 	throw std::runtime_error("No legacy data load allowed for scripts");
+}
+
+void ScriptHandler::performRegistration(Services * services) const
+{
+	for(auto & keyValue : objects)
+	{
+		auto script = keyValue.second;
+		script->performRegistration(services);
+	}
 }
 
 void ScriptHandler::loadState(const JsonNode & state)

@@ -1,5 +1,5 @@
 /*
- * Custom.cpp, part of VCMI engine
+ * ERMSpellEffect.cpp, part of VCMI engine
  *
  * Authors: listed in file AUTHORS in main folder
  *
@@ -9,15 +9,17 @@
  */
 #include "StdInc.h"
 
-#include "Custom.h"
-#include "Registry.h"
-#include "../ISpellMechanics.h"
-#include "../../battle/Unit.h"
-#include "../../battle/CBattleInfoCallback.h"
-#include "../../ScriptingService.h"
-#include "../../serializer/JsonSerializeFormat.h"
+#include "ERMSpellEffect.h"
 
-static const std::string EFFECT_NAME = "core:custom";//todo: move registration to script handler
+#include "../../lib/spells/effects/Registry.h"
+#include "../../lib/spells/ISpellMechanics.h"
+
+#include "../../lib/battle/Unit.h"
+#include "../../lib/battle/CBattleInfoCallback.h"
+#include "../../lib/ScriptingService.h"
+#include "../../lib/serializer/JsonSerializeFormat.h"
+
+
 
 static const std::string APPLICABLE_GENERAL = "applicable";
 static const std::string APPLICABLE_TARGET = "applicableTarget";
@@ -27,26 +29,39 @@ namespace spells
 namespace effects
 {
 
-VCMI_REGISTER_SPELL_EFFECT(Custom, EFFECT_NAME);
-
-Custom::Custom()
+ERMSpellEffectFactory::ERMSpellEffectFactory(const Script * script_)
+	: script(script_)
 {
 
 }
 
-Custom::~Custom() = default;
+ERMSpellEffectFactory::~ERMSpellEffectFactory() = default;
 
-void Custom::adjustTargetTypes(std::vector<TargetType> & types) const
+Effect * ERMSpellEffectFactory::create() const
+{
+	return new ERMSpellEffect(script);
+}
+
+
+ERMSpellEffect::ERMSpellEffect(const Script * script_)
+	: script(script_)
 {
 
 }
 
-void Custom::adjustAffectedHexes(std::set<BattleHex> & hexes, const Mechanics * m, const Target & spellTarget) const
+ERMSpellEffect::~ERMSpellEffect() = default;
+
+void ERMSpellEffect::adjustTargetTypes(std::vector<TargetType> & types) const
 {
 
 }
 
-bool Custom::applicable(Problem & problem, const Mechanics * m) const
+void ERMSpellEffect::adjustAffectedHexes(std::set<BattleHex> & hexes, const Mechanics * m, const Target & spellTarget) const
+{
+
+}
+
+bool ERMSpellEffect::applicable(Problem & problem, const Mechanics * m) const
 {
 	std::shared_ptr<scripting::Context> context = resolveScript(m);
 	if(!context)
@@ -58,14 +73,14 @@ bool Custom::applicable(Problem & problem, const Mechanics * m) const
 
 	if(response.getType() != JsonNode::JsonType::DATA_INTEGER)
 	{
-		logMod->error("Invalid API response from script %s.", scriptName);
+		logMod->error("Invalid API response from script %s.", script->getName());
 		logMod->debug(response.toJson(true));
 		return false;
 	}
 	return response.Integer() == 1;
 }
 
-bool Custom::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
+bool ERMSpellEffect::applicable(Problem & problem, const Mechanics * m, const EffectTarget & target) const
 {
 	std::shared_ptr<scripting::Context> context = resolveScript(m);
 	if(!context)
@@ -98,46 +113,41 @@ bool Custom::applicable(Problem & problem, const Mechanics * m, const EffectTarg
 
 	if(response.getType() != JsonNode::JsonType::DATA_INTEGER)
 	{
-		logMod->error("Invalid API response from script %s.", scriptName);
+		logMod->error("Invalid API response from script %s.", script->getName());
 		logMod->debug(response.toJson(true));
 		return false;
 	}
 	return response.Integer() == 1;
 }
 
-void Custom::apply(BattleStateProxy * battleState, RNG & rng, const Mechanics * m, const EffectTarget & target) const
+void ERMSpellEffect::apply(BattleStateProxy * battleState, RNG & rng, const Mechanics * m, const EffectTarget & target) const
 {
 
 }
 
-EffectTarget Custom::filterTarget(const Mechanics * m, const EffectTarget & target) const
+EffectTarget ERMSpellEffect::filterTarget(const Mechanics * m, const EffectTarget & target) const
 {
 	return EffectTarget(target);
 }
 
-EffectTarget Custom::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
+EffectTarget ERMSpellEffect::transformTarget(const Mechanics * m, const Target & aimPoint, const Target & spellTarget) const
 {
 	return EffectTarget(spellTarget);
 }
 
-void Custom::serializeJsonEffect(JsonSerializeFormat & handler)
+void ERMSpellEffect::serializeJsonEffect(JsonSerializeFormat & handler)
 {
-	handler.serializeString("script", scriptName);
+	//TODO: load everything and provide to script
 }
 
-std::shared_ptr<scripting::Context> Custom::resolveScript(const Mechanics * m) const
+std::shared_ptr<Context> ERMSpellEffect::resolveScript(const Mechanics * m) const
 {
-	auto script = m->scriptingService()->resolveScript(scriptName);
-
-	if(!script)
-		return std::shared_ptr<scripting::Context>();
-
 	auto context = m->battle()->getScriptingContext(script);
-	context->init(m->game(), m->battle());
+	context->init(m->game(), m->battle()); //???
 	return context;
 }
 
-void Custom::setContextVariables(const Mechanics * m, std::shared_ptr<scripting::Context> context) const
+void ERMSpellEffect::setContextVariables(const Mechanics * m, std::shared_ptr<Context> context) const
 {
 	context->setGlobal("effect-level", m->getEffectLevel());
 	context->setGlobal("effect-range-level", m->getRangeLevel());

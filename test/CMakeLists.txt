@@ -30,6 +30,7 @@ set(test_SRCS
 		erm/ERMFixture.cpp
 		erm/ExamplesTest.cpp
 		erm/SpellEffectAPITest.cpp
+		erm/ERMSpellEffectTest.cpp
 
  		game/CGameStateTest.cpp
 
@@ -43,7 +44,6 @@ set(test_SRCS
 		spells/effects/EffectFixture.cpp
  		spells/effects/CatapultTest.cpp
  		spells/effects/CloneTest.cpp
- 		spells/effects/CustomTest.cpp
  		spells/effects/DamageTest.cpp
  		spells/effects/DispelTest.cpp
  		spells/effects/HealTest.cpp
