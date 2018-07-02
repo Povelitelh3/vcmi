@@ -15,7 +15,7 @@ class ERMScriptModule : public scripting::Module
 {
 public:
 	ERMScriptModule();
-	std::shared_ptr<scripting::ContextBase> createContextFor(const scripting::Script * source) const override;
+	std::shared_ptr<scripting::ContextBase> createContextFor(const scripting::Script * source, const IGameInfoCallback * gameCb, const CBattleInfoCallback * battleCb) const override;
 
 	void registerSpellEffect(spells::effects::Registry * registry, const scripting::Script * source) const override;
 };

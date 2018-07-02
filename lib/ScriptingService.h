@@ -24,7 +24,6 @@ class DLL_LINKAGE Context
 public:
 	virtual ~Context() = default;
 
-	virtual void init(const IGameInfoCallback * cb, const CBattleInfoCallback * battleCb) = 0;
 	virtual void giveActionCB(IGameEventRealizer * cb) = 0;
 
 	virtual JsonNode callGlobal(const std::string & name, const JsonNode & parameters) = 0;
@@ -42,7 +41,7 @@ public:
 	virtual const std::string & getName() const = 0;
 	virtual const std::string & getSource() const = 0;
 
-	virtual std::shared_ptr<Context> createContext() const = 0;
+	virtual std::shared_ptr<Context> createContext(const IGameInfoCallback * gameCb, const CBattleInfoCallback * battleCb) const = 0;
 };
 
 class DLL_LINKAGE Service
@@ -59,6 +58,7 @@ public:
 	virtual ~Pool() = default;
 
 	virtual std::shared_ptr<Context> getContext(const Script * script) = 0;
+
 };
 
 }

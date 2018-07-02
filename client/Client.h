@@ -111,9 +111,8 @@ class CClient : public IGameCallback
 
 public:
 	std::map<PlayerColor, std::shared_ptr<CCallback>> callbacks; //callbacks given to player interfaces
-	std::map<PlayerColor, std::shared_ptr<CBattleCallback>> battleCallbacks; //callbacks given to player interfaces
-	std::vector<std::shared_ptr<IGameEventsReceiver>> privilegedGameEventReceivers; //scripting modules, spectator interfaces
-	std::vector<std::shared_ptr<IBattleEventsReceiver>> privilegedBattleEventReceivers; //scripting modules, spectator interfaces
+	std::vector<std::shared_ptr<IGameEventsReceiver>> privilegedGameEventReceivers; //scripting modules(?), spectator interfaces
+	std::vector<std::shared_ptr<IBattleEventsReceiver>> privilegedBattleEventReceivers; //scripting modules(?), spectator interfaces
 	std::map<PlayerColor, std::shared_ptr<CGameInterface>> playerint;
 	std::map<PlayerColor, std::shared_ptr<CBattleGameInterface>> battleints;
 
@@ -215,5 +214,8 @@ public:
 
 	scripting::Pool * getGlobalContextPool() const override;
 private:
+	std::map<PlayerColor, std::shared_ptr<CBattleCallback>> battleCallbacks; //callbacks given to player interfaces
+
+	std::shared_ptr<CBattleCallback> scriptsBattleCallback;
 	std::shared_ptr<scripting::PoolImpl> clientScripts;
 };

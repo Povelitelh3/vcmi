@@ -859,7 +859,7 @@ public:
 	void setGlobal(const std::string & name, const std::string & value) override;
 	void setGlobal(const std::string & name, double value) override;
 
-	void init(const IGameInfoCallback * cb, const CBattleInfoCallback * battleCb) override;//sets up environment etc.
+	void init(const IGameInfoCallback * cb, const CBattleInfoCallback * battleCb);//sets up environment etc.
 //	virtual void executeUserCommand(const std::string &cmd) override;
 
 	void giveActionCB(IGameEventRealizer * cb) override;

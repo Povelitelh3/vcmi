@@ -72,7 +72,9 @@ class HypotheticBattle : public BattleProxy, public battle::IUnitEnvironment
 public:
 	std::map<uint32_t, std::shared_ptr<StackWithBonuses>> stackStates;
 
-	HypotheticBattle(Subject realBattle, scripting::Pool * pool_);
+	mutable scripting::Pool * pool;
+
+	HypotheticBattle(Subject realBattle);
 
 	bool unitHasAmmoCart(const battle::Unit * unit) const override;
 	PlayerColor unitEffectiveOwner(const battle::Unit * unit) const override;
@@ -111,5 +113,5 @@ private:
 	int32_t bonusTreeVersion;
 	int32_t activeUnitId;
 	mutable uint32_t nextId;
-	mutable scripting::Pool * pool;
+
 };

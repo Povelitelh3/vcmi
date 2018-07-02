@@ -18,8 +18,9 @@ namespace scripting
 {
 
 
-LuaContext::LuaContext(const Script * source)
-	: script(source)
+LuaContext::LuaContext(vstd::CLoggerBase * logger_, const Script * source)
+	: logger(logger_),
+	script(source)
 {
 	L = luaL_newstate();
 
@@ -44,7 +45,7 @@ void LuaContext::init(const IGameInfoCallback * cb, const CBattleInfoCallback * 
 
 	if(ret)
 	{
-		logMod->error("Script %s failed to load, error: ", script->getName(), lua_tostring(L, -1));
+		logger->error("Script %s failed to load, error: ", script->getName(), lua_tostring(L, -1));
 
 		return;
 	}
@@ -53,7 +54,7 @@ void LuaContext::init(const IGameInfoCallback * cb, const CBattleInfoCallback * 
 
 	if(ret)
 	{
-		logMod->error("Script failed to run, error: ", lua_tostring(L, -1));
+		logger->error("Script failed to run, error: ", lua_tostring(L, -1));
 
 		return;
 	}
@@ -85,7 +86,7 @@ JsonNode LuaContext::callGlobal(const std::string & name, const JsonNode & param
 		boost::format fmt("LUA function %s failed with message: %s");
 		fmt % name % error;
 
-		logMod->error(fmt.str());
+		logger->error(fmt.str());
 
 		return JsonUtils::stringNode(fmt.str());
 	}

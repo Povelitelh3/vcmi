@@ -36,7 +36,7 @@ public:
 	Module();
 	virtual ~Module();
 
-	virtual std::shared_ptr<ContextBase> createContextFor(const Script * source) const = 0;
+	virtual std::shared_ptr<ContextBase> createContextFor(const Script * source, const IGameInfoCallback * gameCb, const CBattleInfoCallback * battleCb) const = 0;
 
 	virtual void registerSpellEffect(spells::effects::Registry * registry, const Script * source) const = 0;
 };

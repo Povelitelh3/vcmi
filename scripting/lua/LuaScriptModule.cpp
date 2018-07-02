@@ -31,9 +31,11 @@ namespace scripting
 LuaScriptModule::LuaScriptModule() = default;
 LuaScriptModule::~LuaScriptModule() = default;
 
-std::shared_ptr<scripting::ContextBase> LuaScriptModule::createContextFor(const Script * source) const
+std::shared_ptr<scripting::ContextBase> LuaScriptModule::createContextFor(const Script * source, const IGameInfoCallback * gameCb, const CBattleInfoCallback * battleCb) const
 {
-	return std::make_shared<scripting::LuaContext>(source);
+	auto ret = std::make_shared<scripting::LuaContext>(logMod, source);
+	ret->init(gameCb, battleCb);
+	return ret;
 }
 
 void LuaScriptModule::registerSpellEffect(spells::effects::Registry * registry, const Script * source) const

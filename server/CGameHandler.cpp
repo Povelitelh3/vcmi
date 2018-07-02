@@ -1936,7 +1936,7 @@ void CGameHandler::run(bool resume)
 {
 	LOG_TRACE_PARAMS(logGlobal, "resume=%d", resume);
 
-	serverScripts.reset(new scripting::PoolImpl());
+	serverScripts.reset(new scripting::PoolImpl(this, this));
 
 	using namespace boost::posix_time;
 	for (auto cc : lobby->connections)

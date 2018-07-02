@@ -78,8 +78,6 @@ public:
 
 		EXPECT_CALL(*pool, getContext(Eq(&scriptMock))).WillOnce(Return(contextMock));
 
-		EXPECT_CALL(*contextMock, init(_,_)).Times(1);//???
-
 		expectSettingContextVariables();
 
 //		JsonNode options(JsonNode::JsonType::DATA_STRUCT);

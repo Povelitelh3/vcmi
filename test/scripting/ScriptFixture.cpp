@@ -43,9 +43,7 @@ void ScriptFixture::loadScript(const JsonNode & scriptConfig)
 {
 	subject = VLC->scriptHandler->loadFromJson(scriptConfig, "test");
 
-	context = subject->createContext();
-
-	context->init(&infoMock, battleFake.get());
+	context = subject->createContext(&infoMock, battleFake.get());
 
 	EXPECT_CALL(*pool, getContext(_)).WillRepeatedly(Return(context));
 }

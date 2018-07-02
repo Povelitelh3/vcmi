@@ -193,10 +193,9 @@ void StackWithBonuses::spendMana(const spells::PacketSender * server, const int 
 	//TODO: evaluate cast use
 }
 
-HypotheticBattle::HypotheticBattle(Subject realBattle, Pool * pool_)
+HypotheticBattle::HypotheticBattle(Subject realBattle)
 	: BattleProxy(realBattle),
-	bonusTreeVersion(1),
-	pool(pool_)
+	bonusTreeVersion(1)
 {
 	auto activeUnit = realBattle->battleActiveUnit();
 	activeUnitId = activeUnit ? activeUnit->unitId() : -1;

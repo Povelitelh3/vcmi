@@ -1811,7 +1811,7 @@ void ERMInterpreter::executeTriggerType(VERMInterpreter::TriggerType tt, bool pr
 void ERMInterpreter::executeTriggerType(const char *trigger, int id)
 {
 	TIDPattern tip;
-	tip[0] = std::vector<int>(1, id);
+	tip[1] = std::vector<int>(1, id);
 	executeTriggerType(VERMInterpreter::TriggerType(trigger), true, tip);
 }
 
@@ -2540,6 +2540,17 @@ JsonNode ERMInterpreter::callGlobal(const std::string & name, const JsonNode & p
 {
 	try
 	{
+		if(name.size()>4 && name[0] == '!' && name[1] == '!')
+		{
+			std::string trig = name.substr(2,2);
+			std::string numStr = name.substr(4);
+
+			int num = boost::lexical_cast<int>(numStr);
+
+			executeTriggerType(trig.c_str(), num);
+			return JsonNode();
+		}
+
 		if(!globalEnv->isBound(name, Environment::ANYWHERE))
 			throw ESymbolNotFound(name);
 

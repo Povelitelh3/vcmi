@@ -50,7 +50,7 @@ public:
 	void serializeJson(JsonSerializeFormat & handler);
 	void serializeJsonState(JsonSerializeFormat & handler);
 
-	std::shared_ptr<Context> createContext() const override;
+	std::shared_ptr<Context> createContext(const IGameInfoCallback * gameCb, const CBattleInfoCallback * battleCb) const override;
 	const std::string & getName() const override;
 	const std::string & getSource() const override;
 
@@ -65,9 +65,13 @@ private:
 class DLL_LINKAGE PoolImpl : public Pool
 {
 public:
+	PoolImpl(const IGameInfoCallback * gameCb_, const CBattleInfoCallback * battleCb_);
 	std::shared_ptr<Context> getContext(const Script * script) override;
 private:
 	std::map<const Script *, std::shared_ptr<Context>> cache;
+
+	const IGameInfoCallback * gameCb;
+	const CBattleInfoCallback * battleCb;
 };
 
 class DLL_LINKAGE ScriptHandler : public ::IHandlerBase, public Service

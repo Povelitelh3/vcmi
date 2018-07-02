@@ -13,7 +13,7 @@
 #include "../../lib/VCMI_Lib.h"
 #include "../../lib/ScriptHandler.h"
 #include "../../lib/NetPacks.h"
-
+#include "../JsonComparer.h"
 
 
 ///All unsorted ERM acceptance tests goes here
@@ -57,7 +57,7 @@ protected:
 	}
 };
 
-TEST_F(ExamplesTest, HelloWorld)
+TEST_F(ExamplesTest, TESTY_ERM)
 {
 	setDefaultExpectaions();
 
@@ -70,12 +70,30 @@ TEST_F(ExamplesTest, HelloWorld)
 
 	GTEST_ASSERT_NE(subject, nullptr);
 
-	std::shared_ptr<Context> ctx = subject->createContext();
+	std::shared_ptr<Context> ctx = subject->createContext(&infoMock, battleFake.get());
 	ctx->giveActionCB(&applierMock);
-	ctx->init(&infoMock, battleFake.get());
+
+	JsonNode ret = ctx->callGlobal("!!FU42", JsonNode());
+
+	JsonNode expected;
+
+	JsonComparer c(false);
+	c.compare("!!FU42 ret", ret, expected);
+
+	std::vector<std::string> expectedTexts =
+	{
+		"Hello world number 0! (2)",
+		"Hello world number 1! (3)",
+		"Hello world number 2! (2)",
+		"Hello world number 3! (3)",
+		"Hello world number 4! (1)",
+		"Composed hello %world%, v2777=4, v2778=0!"
+	};
+
+	EXPECT_THAT(actualTexts, Eq(expectedTexts));
 }
 
-TEST_F(ExamplesTest, HelloWorldVERM)
+TEST_F(ExamplesTest, STD_VERM)
 {
 	setDefaultExpectaions();
 
@@ -88,9 +106,15 @@ TEST_F(ExamplesTest, HelloWorldVERM)
 
 	GTEST_ASSERT_NE(subject, nullptr);
 
-	std::shared_ptr<Context> ctx = subject->createContext();
+	std::shared_ptr<Context> ctx = subject->createContext(&infoMock, battleFake.get());
 	ctx->giveActionCB(&applierMock);
-	ctx->init(&infoMock, battleFake.get());
+
+	JsonNode ret = ctx->callGlobal("!!FU42", JsonNode());
+
+	JsonNode expected;
+
+	JsonComparer c(false);
+	c.compare("!!FU42 ret", ret, expected);
 
 	std::vector<std::string> expectedTexts =
 	{
@@ -101,7 +125,7 @@ TEST_F(ExamplesTest, HelloWorldVERM)
 		"Hello world from macro usage"
 	};
 
-	EXPECT_THAT(actualTexts, ContainerEq(expectedTexts));
+	EXPECT_THAT(actualTexts, Eq(expectedTexts));
 }
 
 }

@@ -38,9 +38,9 @@ ScriptImpl::ScriptImpl(const ScriptHandler * owner_)
 
 ScriptImpl::~ScriptImpl() = default;
 
-std::shared_ptr<Context> ScriptImpl::createContext() const
+std::shared_ptr<Context> ScriptImpl::createContext(const IGameInfoCallback * gameCb, const CBattleInfoCallback * battleCb) const
 {
-	return host->createContextFor(this);
+	return host->createContextFor(this, gameCb, battleCb);
 }
 
 const std::string & ScriptImpl::getName() const
@@ -106,13 +106,20 @@ void ScriptImpl::resolveHost()
 		throw std::runtime_error("Unknown script language in:"+sourcePath);
 }
 
+PoolImpl::PoolImpl(const IGameInfoCallback * gameCb_, const CBattleInfoCallback * battleCb_)
+	: gameCb(gameCb_),
+	battleCb(battleCb_)
+{
+
+}
+
 std::shared_ptr<Context> PoolImpl::getContext(const Script * script)
 {
 	auto iter = cache.find(script);
 
 	if(iter == cache.end())
 	{
-		auto context = script->createContext();
+		auto context = script->createContext(gameCb, battleCb);
 		cache[script] = context;
 		return context;
 	}

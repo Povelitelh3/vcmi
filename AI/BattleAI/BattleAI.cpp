@@ -123,9 +123,10 @@ BattleAction CBattleAI::activeStack( const CStack * stack )
 			return *action;
 		//best action is from effective owner point if view, we are effective owner as we received "activeStack"
 
-		scripting::PoolImpl pool;
+		HypotheticBattle hb(getCbc());
 
-		HypotheticBattle hb(getCbc(), &pool);
+		scripting::PoolImpl pool(nullptr, &hb);
+        hb.pool = &pool;
 
 		PotentialTargets targets(stack, &hb);
 		if(targets.possibleAttacks.size())
@@ -400,9 +401,12 @@ void CBattleAI::attemptCastingSpell()
 
 	{
 		bool enemyHadTurn = false;
-		scripting::PoolImpl pool;
 
-		HypotheticBattle state(cb, &pool);
+		HypotheticBattle state(cb);
+
+		scripting::PoolImpl pool(nullptr, &state);
+		state.pool = &pool;
+
 		evaluateQueue(valueOfStack, turnOrder, &state, 0, &enemyHadTurn);
 
 		if(!enemyHadTurn)
@@ -417,11 +421,12 @@ void CBattleAI::attemptCastingSpell()
 		}
 	}
 
-	auto evaluateSpellcast = [&] (PossibleSpellcast * ps, std::shared_ptr<scripting::Pool> pool)
+	auto evaluateSpellcast = [&] (PossibleSpellcast * ps, std::shared_ptr<void>)
 	{
-		HypotheticBattle state(cb, pool.get());
+		HypotheticBattle state(cb);
 
-		//TODO: reset context?
+		scripting::PoolImpl pool(nullptr, &state);
+		state.pool = &pool;
 
 		spells::BattleCast cast(&state, hero, spells::Mode::HERO, ps->spell);
 		cast.cast(&state, rngStub, ps->dest);
@@ -483,7 +488,7 @@ void CBattleAI::attemptCastingSpell()
 		}
 	};
 
-	using EvalRunner = ThreadPool<scripting::Pool>;
+	using EvalRunner = ThreadPool<void>;
 
 	EvalRunner::Tasks tasks;
 
@@ -500,11 +505,11 @@ void CBattleAI::attemptCastingSpell()
 
 	CStopWatch timer;
 
-	std::vector<std::shared_ptr<scripting::Pool>> scriptsPool;
+	std::vector<std::shared_ptr<void>> scriptsPool; //todo: re-implement scripts context cache
 
 	for(uint32_t idx = 0; idx < threadCount; idx++)
 	{
-		scriptsPool.emplace_back(new scripting::PoolImpl());
+		scriptsPool.emplace_back();
 	}
 
 	EvalRunner runner(&tasks, scriptsPool);

@@ -127,7 +127,10 @@ void CClient::newGame()
 	logNetwork->trace("Initializing GameState (together): %d ms", CSH->th->getDiff());
 
 	initMapHandler();
-	clientScripts.reset(new scripting::PoolImpl());
+
+	scriptsBattleCallback.reset(new CBattleCallback(boost::none, this));
+	clientScripts.reset(new scripting::PoolImpl(this, scriptsBattleCallback.get()));
+
 	initPlayerInterfaces();
 }
 
@@ -172,10 +175,11 @@ void CClient::loadGame()
 
 	gs->updateOnLoad(CSH->si.get());
 	initMapHandler();
-
-	clientScripts.reset(new scripting::PoolImpl());
-
 	serialize(loader->serializer, loader->serializer.fileVersion);
+
+	scriptsBattleCallback.reset(new CBattleCallback(boost::none, this));
+	clientScripts.reset(new scripting::PoolImpl(this, scriptsBattleCallback.get()));
+
 	initPlayerInterfaces();
 }
 
@@ -290,6 +294,7 @@ void CClient::save(const std::string & fname)
 void CClient::endGame()
 {
 	clientScripts.reset();
+	scriptsBattleCallback.reset();
 
 	//suggest interfaces to finish their stuff (AI should interrupt any bg working threads)
 	for(auto & i : playerint)
@@ -484,6 +489,7 @@ int CClient::sendRequest(const CPackForServer * request, PlayerColor player)
 
 void CClient::battleStarted(const BattleInfo * info)
 {
+	scriptsBattleCallback->setBattle(info);
 	for(auto & battleCb : battleCallbacks)
 	{
 		if(vstd::contains_if(info->sides, [&](const SideInBattle& side) {return side.color == battleCb.first; })
@@ -579,6 +585,8 @@ void CClient::battleFinished()
 
 	if(settings["session"]["spectate"].Bool() && !settings["session"]["spectate-skip-battle"].Bool())
 		battleCallbacks[PlayerColor::SPECTATOR]->setBattle(nullptr);
+
+	scriptsBattleCallback->setBattle(nullptr);
 }
 
 void CClient::startPlayerBattleAction(PlayerColor color)

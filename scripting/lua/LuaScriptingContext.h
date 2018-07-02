@@ -21,10 +21,10 @@ namespace scripting
 class LuaContext : public ContextBase
 {
 public:
-	LuaContext(const Script * source);
+	LuaContext(vstd::CLoggerBase * logger_, const Script * source);
 	virtual ~LuaContext();
 
-	void init(const IGameInfoCallback * cb, const CBattleInfoCallback * battleCb) override;
+	void init(const IGameInfoCallback * cb, const CBattleInfoCallback * battleCb);
 	void giveActionCB(IGameEventRealizer * cb) override;
 
 	JsonNode callGlobal(const std::string & name, const JsonNode & parameters) override;
@@ -41,6 +41,8 @@ protected:
 
 private:
 	lua_State * L;
+
+	vstd::CLoggerBase * logger;
 
 	const Script * script;
 

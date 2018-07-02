@@ -1,11 +1,23 @@
 VERM
 
 !?PI;
+
+; example 2 --- simple arithmetics
+![defun add [x y] [+ x y]]
+
+
+; example 6 --- resursion
+![defun factorial [n]
+	[if [= n 0] 1
+		[* n [factorial [- n 1]]]
+	]
+]
+
+!?FU42;
 ; example 1 --- Hello World
 ![print ^Hello world!^]
 
 ; example 2 --- simple arithmetics
-![defun add [x y] [+ x y]]
 ![print [add 2 3]]
 
 ; example 3 --- semantic macros
@@ -37,9 +49,4 @@ VERM
 ![[lambda [x y] [if [> x y] [print ^wieksze^] [print ^mniejsze^]]] 2 3]
 
 ; example 6 --- resursion
-![defun factorial [n]
-	[if [= n 0] 1
-		[* n [factorial [- n 1]]]
-	]
-]
 ![print [factorial 8]]
